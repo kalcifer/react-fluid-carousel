@@ -92,24 +92,6 @@ var carouselObjStyle = {
   padding: "0 10px"
 };
 
-var prevNextStyle = {
-  position: "absolute",
-  "margin-top": "20px",
-  "z-index": "10",
-  content: "<",
-  width: "40px",
-  background: "black",
-  border: "black",
-  opacity: "0.5",
-  top: "0"
-};
-
-var noHoverStyle = {
-  opacity: "0.8",
-  outline: "none",
-  cursor: "pointer"
-};
-
 var padding = 10;
 
 var Carousel = function (_Component) {
@@ -192,7 +174,10 @@ var Carousel = function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      var children = this.props.children;
+      var _props = this.props,
+          children = _props.children,
+          renderPrev = _props.renderPrev,
+          renderNext = _props.renderNext;
       var _state = this.state,
           hoverTransitionKey = _state.hoverTransitionKey,
           height = _state.height,
@@ -240,10 +225,6 @@ var Carousel = function (_Component) {
       }
       var prevButtonDisabled = this.state.position === 0 || this.state.hoverTransitionKey;
       var nextButtonDisabled = this.state.position > this.state.fullWidth - this.state.parentWidth || this.state.hoverTransitionKey;
-      var prevStyle = prevButtonDisabled ? {} : noHoverStyle;
-      var nextStyle = nextButtonDisabled ? {} : noHoverStyle;
-      prevStyle = _extends({}, prevStyle, prevNextStyle);
-      nextStyle = _extends({}, nextStyle, prevNextStyle);
       return React__default.createElement(
         "div",
         { style: _extends({}, containerStyle, { width: parentWidth }) },
@@ -289,15 +270,15 @@ var Carousel = function (_Component) {
             );
           })
         ),
-        React__default.createElement("button", {
+        renderPrev({
           disabled: prevButtonDisabled,
           onClick: this.prev,
-          style: _extends({ height: height }, prevStyle)
+          basicStyle: { height: height }
         }),
-        React__default.createElement("button", {
+        renderNext({
           disabled: nextButtonDisabled,
           onClick: this.next,
-          style: _extends({ height: height, right: 0 }, nextStyle)
+          basicStyle: { height: height, right: 0 }
         })
       );
     }
@@ -305,4 +286,64 @@ var Carousel = function (_Component) {
   return Carousel;
 }(React.Component);
 
-module.exports = Carousel;
+var prevNextStyle = {
+  position: "absolute",
+  "margin-top": "20px",
+  "z-index": "10",
+  content: "<",
+  width: "40px",
+  background: "black",
+  border: "black",
+  opacity: "0.5",
+  top: "0"
+};
+
+var noHoverStyle = {
+  opacity: "0.8",
+  outline: "none",
+  cursor: "pointer"
+};
+
+var PrevButton = function PrevButton(_ref) {
+  var disabled = _ref.disabled,
+      onClick = _ref.onClick,
+      basicStyle = _ref.basicStyle;
+
+  var style = disabled ? {} : noHoverStyle;
+  style = _extends({}, style, prevNextStyle);
+  return React__default.createElement("button", {
+    disabled: disabled,
+    onClick: onClick,
+    style: _extends({}, basicStyle, style)
+  });
+};
+
+var NextButton = function NextButton(_ref2) {
+  var disabled = _ref2.disabled,
+      onClick = _ref2.onClick,
+      basicStyle = _ref2.basicStyle;
+
+  var style = disabled ? {} : noHoverStyle;
+  style = _extends({}, style, prevNextStyle);
+  return React__default.createElement("button", {
+    disabled: disabled,
+    onClick: onClick,
+    style: _extends({}, basicStyle, style)
+  });
+};
+
+var index = (function (_ref3) {
+  var children = _ref3.children,
+      renderPrev = _ref3.renderPrev,
+      renderNext = _ref3.renderNext;
+  return React__default.createElement(
+    Carousel,
+    {
+      renderPrev: renderPrev || PrevButton,
+      renderNext: renderNext || NextButton
+    },
+    children
+  );
+});
+
+module.exports = index;
