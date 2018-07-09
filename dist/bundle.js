@@ -4,6 +4,94 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var React = require('react');
 var React__default = _interopDefault(React);
+var reactDom = _interopDefault(require('react-dom'));
+
+function unwrapExports (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+var NodeResolver_1 = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+
+
+
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var NodeResolver = function (_Component) {
+  _inherits(NodeResolver, _Component);
+
+  function NodeResolver() {
+    _classCallCheck(this, NodeResolver);
+
+    return _possibleConstructorReturn(this, (NodeResolver.__proto__ || Object.getPrototypeOf(NodeResolver)).apply(this, arguments));
+  }
+
+  _createClass(NodeResolver, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.props.innerRef((0, reactDom.findDOMNode)(this));
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.children !== this.props.children) {
+        this.props.innerRef((0, reactDom.findDOMNode)(this));
+      }
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.props.innerRef(null);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return this.props.children;
+    }
+  }]);
+
+  return NodeResolver;
+}(React__default.Component);
+
+exports.default = NodeResolver;
+});
+
+unwrapExports(NodeResolver_1);
+
+var lib = createCommonjsModule(function (module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+
+Object.defineProperty(exports, 'default', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(NodeResolver_1).default;
+  }
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+});
+
+var NodeResolver$1 = unwrapExports(lib);
 
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -79,7 +167,7 @@ var childAfterHoverVals = {
 };
 
 var containerStyle = {
-  "overflow-x": "hidden",
+  overflowX: "hidden",
   position: "relative"
 };
 
@@ -98,11 +186,17 @@ var Carousel = function (_Component) {
   inherits(Carousel, _Component);
 
   function Carousel() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     classCallCheck(this, Carousel);
 
-    var _this = possibleConstructorReturn(this, (Carousel.__proto__ || Object.getPrototypeOf(Carousel)).call(this));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _this.state = {
+    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = Carousel.__proto__ || Object.getPrototypeOf(Carousel)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
       height: null,
       width: null,
       parentWidth: null,
@@ -111,9 +205,9 @@ var Carousel = function (_Component) {
       prev: false,
       next: false,
       hoverTransitionKey: null
-    };
-
-    _this.prev = function () {
+    }, _this.element = null, _this.getRef = function (element) {
+      _this.element = element;
+    }, _this.prev = function () {
       if (_this.state.position !== 0) {
         _this.setState({
           position: _this.state.position - _this.state.width - padding,
@@ -121,45 +215,37 @@ var Carousel = function (_Component) {
           next: false
         });
       }
-    };
-
-    _this.next = function () {
+    }, _this.next = function () {
       _this.setState({
         position: _this.state.position + _this.state.width + padding,
         prev: false,
         next: true
       });
-    };
-
-    _this.onMouseEnter = function (key) {
+    }, _this.onMouseEnter = function (key) {
       _this.setState({
         hoverTransitionKey: key
       });
-    };
-
-    _this.onMouseLeave = function (key) {
+    }, _this.onMouseLeave = function (key) {
       _this.setState({
         hoverTransitionKey: null
       });
-    };
-
-    _this.refDOM = React__default.createRef();
-    return _this;
+    }, _temp), possibleConstructorReturn(_this, _ret);
   }
 
   createClass(Carousel, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      var element = this.refDOM.current;
-      var dimensions = element.firstChild.getBoundingClientRect();
-      var parentDimensions = element.parentElement.getBoundingClientRect();
-      var count = React__default.Children.count(this.props.children);
-      this.setState({
-        height: dimensions.height,
-        width: dimensions.width,
-        parentWidth: parentDimensions.width,
-        fullWidth: dimensions.width * count + padding * count * 2
-      });
+      if (this.element) {
+        var dimensions = this.element.getBoundingClientRect();
+        var parentDimensions = this.element.parentElement.getBoundingClientRect();
+        var count = React__default.Children.count(this.props.children);
+        this.setState({
+          height: dimensions.height,
+          width: dimensions.width,
+          parentWidth: parentDimensions.width,
+          fullWidth: dimensions.width * count + padding * count * 2
+        });
+      }
     }
   }, {
     key: "shouldComponentUpdate",
@@ -200,8 +286,8 @@ var Carousel = function (_Component) {
       if (!height) {
         var firstChild = React__default.Children.toArray(children)[0];
         return React__default.createElement(
-          "div",
-          { ref: this.refDOM, style: { opacity: 0 } },
+          NodeResolver$1,
+          { innerRef: this.getRef },
           firstChild
         );
       }
@@ -288,8 +374,8 @@ var Carousel = function (_Component) {
 
 var prevNextStyle = {
   position: "absolute",
-  "margin-top": "20px",
-  "z-index": "10",
+  marginTop: "20px",
+  zIndex: "10",
   content: "<",
   width: "40px",
   background: "black",

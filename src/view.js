@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import NodeResolver from "react-node-resolver";
 
 const childHoverVals = {
   transform: "scale(1.2)"
@@ -12,7 +13,7 @@ let childAfterHoverVals = {
 };
 
 const containerStyle = {
-  "overflow-x": "hidden",
+  overflowX: "hidden",
   position: "relative"
 };
 
@@ -37,22 +38,25 @@ export default class Carousel extends Component {
     next: false,
     hoverTransitionKey: null
   };
-  constructor() {
-    super();
-    this.refDOM = React.createRef();
-  }
+  element = null;
+
   componentDidMount() {
-    const element = this.refDOM.current;
-    const dimensions = element.firstChild.getBoundingClientRect();
-    const parentDimensions = element.parentElement.getBoundingClientRect();
-    const count = React.Children.count(this.props.children);
-    this.setState({
-      height: dimensions.height,
-      width: dimensions.width,
-      parentWidth: parentDimensions.width,
-      fullWidth: dimensions.width * count + padding * count * 2
-    });
+    if (this.element) {
+      const dimensions = this.element.getBoundingClientRect();
+      const parentDimensions = this.element.parentElement.getBoundingClientRect();
+      const count = React.Children.count(this.props.children);
+      this.setState({
+        height: dimensions.height,
+        width: dimensions.width,
+        parentWidth: parentDimensions.width,
+        fullWidth: dimensions.width * count + padding * count * 2
+      });
+    }
   }
+
+  getRef = element => {
+    this.element = element;
+  };
 
   shouldComponentUpdate(nextProps, nextState) {
     if (
@@ -109,11 +113,7 @@ export default class Carousel extends Component {
     }
     if (!height) {
       const firstChild = React.Children.toArray(children)[0];
-      return (
-        <div ref={this.refDOM} style={{ opacity: 0 }}>
-          {firstChild}
-        </div>
-      );
+      return <NodeResolver innerRef={this.getRef}>{firstChild}</NodeResolver>;
     }
 
     const translateValue = -position;
