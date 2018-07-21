@@ -221,6 +221,10 @@ var Carousel = function (_Component) {
         prev: false,
         next: true
       });
+    }, _this.progress = function (pos) {
+      _this.setState({
+        position: pos
+      });
     }, _this.onMouseEnter = function (key) {
       _this.setState({
         hoverTransitionKey: key
@@ -263,7 +267,8 @@ var Carousel = function (_Component) {
       var _props = this.props,
           children = _props.children,
           renderPrev = _props.renderPrev,
-          renderNext = _props.renderNext;
+          renderNext = _props.renderNext,
+          renderProgress = _props.renderProgress;
       var _state = this.state,
           hoverTransitionKey = _state.hoverTransitionKey,
           height = _state.height,
@@ -311,9 +316,34 @@ var Carousel = function (_Component) {
       }
       var prevButtonDisabled = this.state.position === 0 || this.state.hoverTransitionKey;
       var nextButtonDisabled = this.state.position > this.state.fullWidth - this.state.parentWidth || this.state.hoverTransitionKey;
+
+      var pageSize = Math.ceil(parentWidth / width);
+      var noOfPages = Math.ceil(count / pageSize);
+      var pageArray = new Array(noOfPages).fill(1);
       return React__default.createElement(
         "div",
         { style: _extends({}, containerStyle, { width: parentWidth }) },
+        React__default.createElement(
+          "div",
+          { style: { position: "absolute", zIndex: "5" } },
+          pageArray.map(function (item, index) {
+            var isEnabled = position === index * _this2.state.width * padding;
+            return React__default.createElement(
+              "span",
+              {
+                style: {
+                  cursor: "pointer",
+                  display: "inline-block",
+                  marginRight: "5px"
+                },
+                onClick: function onClick() {
+                  return _this2.progress(index * _this2.state.width * padding);
+                }
+              },
+              renderProgress({ enabled: isEnabled })
+            );
+          })
+        ),
         React__default.createElement(
           "div",
           {
@@ -418,15 +448,33 @@ var NextButton = function NextButton(_ref2) {
   });
 };
 
-var index = (function (_ref3) {
-  var children = _ref3.children,
-      renderPrev = _ref3.renderPrev,
-      renderNext = _ref3.renderNext;
+var ProgressUnit = function ProgressUnit(_ref3) {
+  var enabled = _ref3.enabled;
+
+  var normalStyle = {
+    width: "40px",
+    height: "5px",
+    borderRadius: "2px",
+    background: "gray"
+  };
+  var enabledStyle = {
+    background: "white"
+  };
+  var style = enabled ? _extends({}, normalStyle, enabledStyle) : normalStyle;
+  return React__default.createElement("div", { style: style });
+};
+
+var index = (function (_ref4) {
+  var children = _ref4.children,
+      renderPrev = _ref4.renderPrev,
+      renderNext = _ref4.renderNext,
+      renderProgress = _ref4.renderProgress;
   return React__default.createElement(
     Carousel,
     {
       renderPrev: renderPrev || PrevButton,
-      renderNext: renderNext || NextButton
+      renderNext: renderNext || NextButton,
+      renderProgress: renderProgress || ProgressUnit
     },
     children
   );

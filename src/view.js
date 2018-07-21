@@ -84,6 +84,11 @@ export default class Carousel extends Component {
       next: true
     });
   };
+  progress = pos => {
+    this.setState({
+      position: pos
+    });
+  };
   onMouseEnter = key => {
     this.setState({
       hoverTransitionKey: key
@@ -95,7 +100,7 @@ export default class Carousel extends Component {
     });
   };
   render() {
-    const { children, renderPrev, renderNext } = this.props;
+    const { children, renderPrev, renderNext, renderProgress } = this.props;
     const {
       hoverTransitionKey,
       height,
@@ -138,8 +143,31 @@ export default class Carousel extends Component {
     const nextButtonDisabled =
       this.state.position > this.state.fullWidth - this.state.parentWidth ||
       this.state.hoverTransitionKey;
+
+    const pageSize = Math.ceil(parentWidth / width);
+    const noOfPages = Math.ceil(count / pageSize);
+    const pageArray = new Array(noOfPages).fill(1);
     return (
       <div style={{ ...containerStyle, width: parentWidth }}>
+        <div style={{ position: "absolute", zIndex: "5" }}>
+          {pageArray.map((item, index) => {
+            const isEnabled = position === index * this.state.width * padding;
+            return (
+              <span
+                style={{
+                  cursor: "pointer",
+                  display: "inline-block",
+                  marginRight: "5px"
+                }}
+                onClick={() =>
+                  this.progress(index * this.state.width * padding)
+                }
+              >
+                {renderProgress({ enabled: isEnabled })}
+              </span>
+            );
+          })}
+        </div>
         <div
           style={{
             ...carouselStyle,

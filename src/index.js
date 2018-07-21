@@ -43,10 +43,25 @@ const NextButton = ({ disabled, onClick, basicStyle }) => {
   );
 };
 
-export default ({ children, renderPrev, renderNext }) => (
+const ProgressUnit = ({ enabled }) => {
+  const normalStyle = {
+    width: "40px",
+    height: "5px",
+    borderRadius: "2px",
+    background: "gray"
+  };
+  const enabledStyle = {
+    background: "white"
+  };
+  const style = enabled ? { ...normalStyle, ...enabledStyle } : normalStyle;
+  return <div style={style} />;
+};
+
+export default ({ children, renderPrev, renderNext, renderProgress }) => (
   <Carousel
     renderPrev={renderPrev || PrevButton}
     renderNext={renderNext || NextButton}
+    renderProgress={renderProgress || ProgressUnit}
   >
     {children}
   </Carousel>

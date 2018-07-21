@@ -8,7 +8,7 @@ export default {
     file: "dist/bundle.js",
     format: "cjs"
   },
-  external: ["react"],
+  external: ["react", "react-dom"],
   plugins: [
     resolve(),
     babel({
