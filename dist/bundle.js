@@ -204,7 +204,7 @@ var Carousel = function (_Component) {
       fullWidth: null,
       prev: false,
       next: false,
-      hoverTransitionKey: null
+      hoveredItem: null
     }, _this.element = null, _this.getRef = function (element) {
       _this.element = element;
     }, _this.prev = function () {
@@ -227,11 +227,11 @@ var Carousel = function (_Component) {
       });
     }, _this.onMouseEnter = function (key) {
       _this.setState({
-        hoverTransitionKey: key
+        hoveredItem: key
       });
     }, _this.onMouseLeave = function (key) {
       _this.setState({
-        hoverTransitionKey: null
+        hoveredItem: null
       });
     }, _temp), possibleConstructorReturn(_this, _ret);
   }
@@ -251,14 +251,18 @@ var Carousel = function (_Component) {
         });
       }
     }
-  }, {
-    key: "shouldComponentUpdate",
-    value: function shouldComponentUpdate(nextProps, nextState) {
-      if (this.state.height === nextState.height && this.state.position === nextState.position && this.state.hoverTransitionKey === nextState.hoverTransitionKey) {
-        return false;
-      }
-      return true;
-    }
+
+    // shouldComponentUpdate(nextProps, nextState) {
+    //   if (
+    //     this.state.height === nextState.height &&
+    //     this.state.position === nextState.position &&
+    //     this.state.hoveredItem === nextState.hoveredItem
+    //   ) {
+    //     return false;
+    //   }
+    //   return true;
+    // }
+
   }, {
     key: "render",
     value: function render() {
@@ -270,7 +274,7 @@ var Carousel = function (_Component) {
           renderNext = _props.renderNext,
           renderProgress = _props.renderProgress;
       var _state = this.state,
-          hoverTransitionKey = _state.hoverTransitionKey,
+          hoveredItem = _state.hoveredItem,
           height = _state.height,
           position = _state.position,
           parentWidth = _state.parentWidth,
@@ -298,14 +302,14 @@ var Carousel = function (_Component) {
       }
 
       var translateValue = -position;
-      if (hoverTransitionKey) {
+      if (hoveredItem) {
         var prevObj = void 0;
         var currentObj = void 0;
         React__default.Children.forEach(children, function (child) {
           if (currentObj && !nextKey) {
             nextKey = child.key;
           }
-          if (child.key === hoverTransitionKey) {
+          if (child.key === hoveredItem) {
             if (prevObj) {
               prevKey = prevObj.key;
             }
@@ -314,8 +318,8 @@ var Carousel = function (_Component) {
           prevObj = child;
         });
       }
-      var prevButtonDisabled = this.state.position === 0 || this.state.hoverTransitionKey;
-      var nextButtonDisabled = this.state.position > this.state.fullWidth - this.state.parentWidth || this.state.hoverTransitionKey;
+      var prevButtonDisabled = this.state.position === 0 || this.state.hoveredItem;
+      var nextButtonDisabled = this.state.position > this.state.fullWidth - this.state.parentWidth || this.state.hoveredItem;
 
       var pageSize = Math.ceil(parentWidth / width);
       var noOfPages = Math.ceil(count / pageSize);
@@ -358,7 +362,7 @@ var Carousel = function (_Component) {
             var childStyles = {};
             var key = child.key;
 
-            if (key === hoverTransitionKey) {
+            if (key === hoveredItem) {
               childStyles = childHoverVals;
             }
             if (key === prevKey) {
@@ -452,9 +456,9 @@ var ProgressUnit = function ProgressUnit(_ref3) {
   var enabled = _ref3.enabled;
 
   var normalStyle = {
-    width: "40px",
+    width: "5px",
     height: "5px",
-    borderRadius: "2px",
+    borderRadius: "50%",
     background: "gray"
   };
   var enabledStyle = {

@@ -45,9 +45,9 @@ const NextButton = ({ disabled, onClick, basicStyle }) => {
 
 const ProgressUnit = ({ enabled }) => {
   const normalStyle = {
-    width: "40px",
+    width: "5px",
     height: "5px",
-    borderRadius: "2px",
+    borderRadius: "50%",
     background: "gray"
   };
   const enabledStyle = {

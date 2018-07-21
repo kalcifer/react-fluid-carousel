@@ -36,7 +36,7 @@ export default class Carousel extends Component {
     fullWidth: null,
     prev: false,
     next: false,
-    hoverTransitionKey: null
+    hoveredItem: null
   };
   element = null;
 
@@ -58,16 +58,16 @@ export default class Carousel extends Component {
     this.element = element;
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (
-      this.state.height === nextState.height &&
-      this.state.position === nextState.position &&
-      this.state.hoverTransitionKey === nextState.hoverTransitionKey
-    ) {
-      return false;
-    }
-    return true;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   if (
+  //     this.state.height === nextState.height &&
+  //     this.state.position === nextState.position &&
+  //     this.state.hoveredItem === nextState.hoveredItem
+  //   ) {
+  //     return false;
+  //   }
+  //   return true;
+  // }
   prev = () => {
     if (this.state.position !== 0) {
       this.setState({
@@ -91,18 +91,18 @@ export default class Carousel extends Component {
   };
   onMouseEnter = key => {
     this.setState({
-      hoverTransitionKey: key
+      hoveredItem: key
     });
   };
   onMouseLeave = key => {
     this.setState({
-      hoverTransitionKey: null
+      hoveredItem: null
     });
   };
   render() {
     const { children, renderPrev, renderNext, renderProgress } = this.props;
     const {
-      hoverTransitionKey,
+      hoveredItem,
       height,
       position,
       parentWidth,
@@ -122,14 +122,14 @@ export default class Carousel extends Component {
     }
 
     const translateValue = -position;
-    if (hoverTransitionKey) {
+    if (hoveredItem) {
       let prevObj;
       let currentObj;
       React.Children.forEach(children, child => {
         if (currentObj && !nextKey) {
           nextKey = child.key;
         }
-        if (child.key === hoverTransitionKey) {
+        if (child.key === hoveredItem) {
           if (prevObj) {
             prevKey = prevObj.key;
           }
@@ -139,10 +139,10 @@ export default class Carousel extends Component {
       });
     }
     const prevButtonDisabled =
-      this.state.position === 0 || this.state.hoverTransitionKey;
+      this.state.position === 0 || this.state.hoveredItem;
     const nextButtonDisabled =
       this.state.position > this.state.fullWidth - this.state.parentWidth ||
-      this.state.hoverTransitionKey;
+      this.state.hoveredItem;
 
     const pageSize = Math.ceil(parentWidth / width);
     const noOfPages = Math.ceil(count / pageSize);
@@ -180,7 +180,7 @@ export default class Carousel extends Component {
           {React.Children.map(children, child => {
             let childStyles = {};
             const { key } = child;
-            if (key === hoverTransitionKey) {
+            if (key === hoveredItem) {
               childStyles = childHoverVals;
             }
             if (key === prevKey) {
