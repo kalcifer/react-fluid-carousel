@@ -8,9 +8,19 @@
       }
     ]
   ],
-  "plugins": [
-    "external-helpers",
-    "transform-class-properties",
-    "transform-object-rest-spread"
-  ]
+  "env": {
+    "test": {
+      "presets": [
+        [
+          "env",
+          {
+            "modules": "commonjs"
+          }
+        ],
+        "react"
+      ],
+      "plugins": ["transform-class-properties", "transform-object-rest-spread"]
+    }
+  },
+  "plugins": ["transform-class-properties", "transform-object-rest-spread"]
 }
