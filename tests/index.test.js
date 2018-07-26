@@ -1,8 +1,9 @@
 import Carousel from "../src";
 import React from "react";
-import { render } from "react-testing-library";
+import { render, cleanup } from "react-testing-library";
 
 describe("Test the component", () => {
+  afterEach(cleanup);
   test("Empty carousel", () => {
     expect(render(<Carousel />)).toMatchSnapshot();
   });
