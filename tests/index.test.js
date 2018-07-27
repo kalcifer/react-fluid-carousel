@@ -7,7 +7,7 @@ describe("Test the component", () => {
     Element.prototype.getBoundingClientRect = jest.fn(() => {
       return {
         width: 40,
-        height: 40,
+        height: 20,
         top: 0,
         left: 0,
         bottom: 0,
@@ -22,8 +22,8 @@ describe("Test the component", () => {
   test("With some children", () => {
     const component = (
       <Carousel>
-        <div key="1" style={{ width: "40px", height: "40px" }} />
-        <div key="2" style={{ width: "40px", height: "40px" }} />
+        <div key="1" style={{ width: "40px", height: "20px" }} />
+        <div key="2" style={{ width: "40px", height: "20px" }} />
       </Carousel>
     );
     const { container } = render(component);
