@@ -5,7 +5,7 @@ import { render, cleanup } from "react-testing-library";
 describe("Test the component", () => {
   afterEach(cleanup);
   test("Empty carousel", () => {
-    expect(render(<Carousel />)).toMatchSnapshot();
+    expect(render(<Carousel />).container).toMatchSnapshot();
   });
   test("With some children", () => {
     expect(
@@ -14,7 +14,7 @@ describe("Test the component", () => {
           <div style={{ width: "40px", height: "40px" }} />
           <div style={{ width: "40px", height: "40px" }} />
         </Carousel>
-      )
+      ).container
     ).toMatchSnapshot();
   });
 });
