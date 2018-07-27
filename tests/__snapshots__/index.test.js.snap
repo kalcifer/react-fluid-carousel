@@ -11,7 +11,51 @@ exports[`Test the component Empty carousel 1`] = `
 exports[`Test the component With some children 1`] = `
 <div>
   <div
-    style="width: 40px; height: 40px;"
-  />
+    style="overflow-x: hidden; position: relative; width: 40px;"
+  >
+    <div
+      style="position: absolute; z-index: 5;"
+    >
+      <span
+        style="cursor: pointer; display: inline-block; margin-right: 5px;"
+      >
+        <div
+          style="width: 5px; height: 5px; border-radius: 50%; background: white;"
+        />
+      </span>
+      <span
+        style="cursor: pointer; display: inline-block; margin-right: 5px;"
+      >
+        <div
+          style="width: 5px; height: 5px; border-radius: 50%; background: gray;"
+        />
+      </span>
+    </div>
+    <div
+      style="display: flex; padding: 20px 0px; height: 40px; width: 120px; transform: translateX(0px);"
+    >
+      <div
+        style="height: 40px; width: 40px; cursor: pointer; padding: 0px 10px;"
+      >
+        <div
+          style="width: 40px; height: 40px;"
+        />
+      </div>
+      <div
+        style="height: 40px; width: 40px; cursor: pointer; padding: 0px 10px;"
+      >
+        <div
+          style="width: 40px; height: 40px;"
+        />
+      </div>
+    </div>
+    <button
+      disabled=""
+      style="height: 40px; position: absolute; margin-top: 20px; z-index: 10; content: <; width: 40px; background: black; border: black; opacity: 0.5; top: 0px;"
+    />
+    <button
+      style="height: 40px; right: 0px; opacity: 0.5; outline: none; cursor: pointer; position: absolute; margin-top: 20px; z-index: 10; content: <; width: 40px; background: black; border: black; top: 0px;"
+    />
+  </div>
 </div>
 `;
