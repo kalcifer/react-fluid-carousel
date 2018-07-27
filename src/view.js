@@ -42,7 +42,6 @@ export default class Carousel extends Component {
 
   componentDidMount() {
     if (this.element) {
-      console.log(this.element.getBoundingClientRect());
       const dimensions = this.element.getBoundingClientRect();
       const parentDimensions = this.element.parentElement.getBoundingClientRect();
       const count = React.Children.count(this.props.children);

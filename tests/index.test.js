@@ -1,6 +1,6 @@
 import Carousel from "../src";
 import React from "react";
-import { render, cleanup } from "react-testing-library";
+import { render, cleanup, fireEvent } from "react-testing-library";
 
 describe("Test the component", () => {
   beforeEach(() => {
@@ -28,5 +28,46 @@ describe("Test the component", () => {
     );
     const { container } = render(component);
     expect(container).toMatchSnapshot();
+  });
+  test("On prev/next click", () => {
+    const component = (
+      <Carousel>
+        <div key="1" style={{ width: "40px", height: "20px" }} />
+        <div key="2" style={{ width: "40px", height: "20px" }} />
+      </Carousel>
+    );
+    const { container } = render(component);
+    const buttons = container.querySelectorAll("button");
+    const [prev, next] = buttons;
+    fireEvent(
+      next,
+      new MouseEvent("click", {
+        bubbles: true, // click events must bubble for React to see it
+        cancelable: true
+      })
+    );
+    expect(container.firstChild.children[1].style.transform).toEqual(
+      "translateX(-50px)"
+    );
+    fireEvent(
+      next,
+      new MouseEvent("click", {
+        bubbles: true, // click events must bubble for React to see it
+        cancelable: true
+      })
+    );
+    expect(container.firstChild.children[1].style.transform).toEqual(
+      "translateX(-100px)"
+    );
+    fireEvent(
+      prev,
+      new MouseEvent("click", {
+        bubbles: true, // click events must bubble for React to see it
+        cancelable: true
+      })
+    );
+    expect(container.firstChild.children[1].style.transform).toEqual(
+      "translateX(-50px)"
+    );
   });
 });
