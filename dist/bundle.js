@@ -185,18 +185,12 @@ var padding = 10;
 var Carousel = function (_Component) {
   inherits(Carousel, _Component);
 
-  function Carousel() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
+  function Carousel(props) {
     classCallCheck(this, Carousel);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    var _this = possibleConstructorReturn(this, (Carousel.__proto__ || Object.getPrototypeOf(Carousel)).call(this));
 
-    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_ref = Carousel.__proto__ || Object.getPrototypeOf(Carousel)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+    _this.state = {
       height: null,
       width: null,
       parentWidth: null,
@@ -205,9 +199,15 @@ var Carousel = function (_Component) {
       prev: false,
       next: false,
       hoveredItem: null
-    }, _this.element = null, _this.getRef = function (element) {
+    };
+    _this.element = null;
+    _this.reactChildren = [];
+
+    _this.getRef = function (element) {
       _this.element = element;
-    }, _this.prev = function () {
+    };
+
+    _this.prev = function () {
       if (_this.state.position !== 0) {
         _this.setState({
           position: _this.state.position - _this.state.width - padding,
@@ -215,25 +215,36 @@ var Carousel = function (_Component) {
           next: false
         });
       }
-    }, _this.next = function () {
+    };
+
+    _this.next = function () {
       _this.setState({
         position: _this.state.position + _this.state.width + padding,
         prev: false,
         next: true
       });
-    }, _this.progress = function (pos) {
+    };
+
+    _this.progress = function (pos) {
       _this.setState({
         position: pos
       });
-    }, _this.onMouseEnter = function (key) {
+    };
+
+    _this.onMouseEnter = function (key) {
       _this.setState({
         hoveredItem: key
       });
-    }, _this.onMouseLeave = function (key) {
+    };
+
+    _this.onMouseLeave = function (key) {
       _this.setState({
         hoveredItem: null
       });
-    }, _temp), possibleConstructorReturn(_this, _ret);
+    };
+
+    _this.reactChildren = React__default.Children.toArray(props.children);
+    return _this;
   }
 
   createClass(Carousel, [{
@@ -282,8 +293,6 @@ var Carousel = function (_Component) {
           width = _state.width;
 
 
-      var prevKey = void 0;
-      var nextKey = void 0;
       var count = React__default.Children.count(children);
       if (!children || count < 0) {
         return React__default.createElement(
@@ -293,7 +302,7 @@ var Carousel = function (_Component) {
         );
       }
       if (!height) {
-        var firstChild = React__default.Children.toArray(children)[0];
+        var firstChild = this.reactChildren[0];
         return React__default.createElement(
           NodeResolver$1,
           { innerRef: this.getRef },
@@ -302,21 +311,12 @@ var Carousel = function (_Component) {
       }
 
       var translateValue = -position;
+      var prevKeyList = [];
+      var nextKeyList = [];
       if (hoveredItem) {
-        var prevObj = void 0;
-        var currentObj = void 0;
-        React__default.Children.forEach(children, function (child) {
-          if (currentObj && !nextKey) {
-            nextKey = child.key;
-          }
-          if (child.key === hoveredItem) {
-            if (prevObj) {
-              prevKey = prevObj.key;
-            }
-            currentObj = child;
-          }
-          prevObj = child;
-        });
+        var lists = findPrevNextObjs(hoveredItem, this.reactChildren);
+        prevKeyList = lists[0];
+        nextKeyList = lists[1];
       }
       var prevButtonDisabled = this.state.position === 0 || this.state.hoveredItem;
       var nextButtonDisabled = this.state.position > this.state.fullWidth - this.state.parentWidth || this.state.hoveredItem;
@@ -358,17 +358,17 @@ var Carousel = function (_Component) {
               transition: "1s"
             })
           },
-          React__default.Children.map(children, function (child) {
+          this.reactChildren.map(function (child) {
             var childStyles = {};
             var key = child.key;
 
             if (key === hoveredItem) {
               childStyles = childHoverVals;
             }
-            if (key === prevKey) {
+            if (prevKeyList.indexOf(key) > -1) {
               childStyles = childBeforeHoverVals;
             }
-            if (key === nextKey) {
+            if (nextKeyList.indexOf(key) > -1) {
               childStyles = childAfterHoverVals;
             }
             childStyles = _extends({}, childStyles, {
@@ -405,6 +405,35 @@ var Carousel = function (_Component) {
   }]);
   return Carousel;
 }(React.Component);
+
+
+var findPrevNextObjs = function findPrevNextObjs(findKey, children) {
+  var prevKeyList = [];
+  var nextKeyList = [];
+  var prevObj = void 0;
+  var currentObj = void 0;
+  var nextObj = void 0;
+  children.forEach(function (child) {
+    if (currentObj && !nextObj) {
+      nextObj = child;
+      nextKeyList.push(child.key);
+    } else if (currentObj && nextObj && nextKeyList.length > 0) {
+      nextKeyList.push(child.key);
+    }
+    if (child.key === findKey) {
+      currentObj = child;
+    }
+    if (prevObj && !currentObj && !nextObj) {
+      prevKeyList.push(child.key);
+    }
+    if (!prevObj && !currentObj) {
+      prevObj = child;
+      prevKeyList.push(prevObj.key);
+    }
+  });
+  debugger; //eslint-disable-line
+  return [prevKeyList, nextKeyList];
+};
 
 var prevNextStyle = {
   position: "absolute",

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Children } from "react";
 import NodeResolver from "react-node-resolver";
 
 const childHoverVals = {
@@ -39,7 +39,11 @@ export default class Carousel extends Component {
     hoveredItem: null
   };
   element = null;
-
+  reactChildren = [];
+  constructor(props) {
+    super();
+    this.reactChildren = React.Children.toArray(props.children);
+  }
   componentDidMount() {
     if (this.element) {
       const dimensions = this.element.getBoundingClientRect();
@@ -110,33 +114,22 @@ export default class Carousel extends Component {
       width
     } = this.state;
 
-    let prevKey;
-    let nextKey;
     const count = React.Children.count(children);
     if (!children || count < 0) {
       return <div>Gimme some children</div>;
     }
     if (!height) {
-      const firstChild = React.Children.toArray(children)[0];
+      const firstChild = this.reactChildren[0];
       return <NodeResolver innerRef={this.getRef}>{firstChild}</NodeResolver>;
     }
 
     const translateValue = -position;
+    let prevKeyList = [];
+    let nextKeyList = [];
     if (hoveredItem) {
-      let prevObj;
-      let currentObj;
-      React.Children.forEach(children, child => {
-        if (currentObj && !nextKey) {
-          nextKey = child.key;
-        }
-        if (child.key === hoveredItem) {
-          if (prevObj) {
-            prevKey = prevObj.key;
-          }
-          currentObj = child;
-        }
-        prevObj = child;
-      });
+      const lists = findPrevNextObjs(hoveredItem, this.reactChildren);
+      prevKeyList = lists[0];
+      nextKeyList = lists[1];
     }
     const prevButtonDisabled =
       this.state.position === 0 || this.state.hoveredItem;
@@ -177,16 +170,16 @@ export default class Carousel extends Component {
             transition: "1s"
           }}
         >
-          {React.Children.map(children, child => {
+          {this.reactChildren.map(child => {
             let childStyles = {};
             const { key } = child;
             if (key === hoveredItem) {
               childStyles = childHoverVals;
             }
-            if (key === prevKey) {
+            if (prevKeyList.indexOf(key) > -1) {
               childStyles = childBeforeHoverVals;
             }
-            if (key === nextKey) {
+            if (nextKeyList.indexOf(key) > -1) {
               childStyles = childAfterHoverVals;
             }
             childStyles = {
@@ -219,3 +212,31 @@ export default class Carousel extends Component {
     );
   }
 }
+
+export const findPrevNextObjs = (findKey, children) => {
+  let prevKeyList = [];
+  let nextKeyList = [];
+  let prevObj;
+  let currentObj;
+  let nextObj;
+  children.forEach(child => {
+    if (currentObj && !nextObj) {
+      nextObj = child;
+      nextKeyList.push(child.key);
+    } else if (currentObj && nextObj && nextKeyList.length > 0) {
+      nextKeyList.push(child.key);
+    }
+    if (child.key === findKey) {
+      currentObj = child;
+    }
+    if (prevObj && !currentObj && !nextObj) {
+      prevKeyList.push(child.key);
+    }
+    if (!prevObj && !currentObj) {
+      prevObj = child;
+      prevKeyList.push(prevObj.key);
+    }
+  });
+  debugger; //eslint-disable-line
+  return [prevKeyList, nextKeyList];
+};
