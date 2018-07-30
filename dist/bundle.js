@@ -180,6 +180,10 @@ var carouselObjStyle = {
   padding: "0 10px"
 };
 
+var inline = {
+  display: "inline"
+};
+
 var padding = 10;
 
 var Carousel = function (_Component) {
@@ -349,6 +353,15 @@ var Carousel = function (_Component) {
           })
         ),
         React__default.createElement(
+          "button",
+          { style: inline },
+          renderPrev({
+            disabled: prevButtonDisabled,
+            onClick: this.prev,
+            basicStyle: { height: height }
+          })
+        ),
+        React__default.createElement(
           "div",
           {
             style: _extends({}, carouselStyle, {
@@ -390,16 +403,15 @@ var Carousel = function (_Component) {
             );
           })
         ),
-        renderPrev({
-          disabled: prevButtonDisabled,
-          onClick: this.prev,
-          basicStyle: { height: height }
-        }),
-        renderNext({
-          disabled: nextButtonDisabled,
-          onClick: this.next,
-          basicStyle: { height: height, right: 0 }
-        })
+        React__default.createElement(
+          "button",
+          { style: inline },
+          renderNext({
+            disabled: nextButtonDisabled,
+            onClick: this.next,
+            basicStyle: { height: height, right: 0 }
+          })
+        )
       );
     }
   }]);

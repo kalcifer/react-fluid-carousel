@@ -26,6 +26,10 @@ const carouselObjStyle = {
   padding: "0 10px"
 };
 
+const inline = {
+  display: "inline"
+};
+
 const padding = 10;
 export default class Carousel extends Component {
   state = {
@@ -161,6 +165,13 @@ export default class Carousel extends Component {
             );
           })}
         </div>
+        <button style={inline}>
+          {renderPrev({
+            disabled: prevButtonDisabled,
+            onClick: this.prev,
+            basicStyle: { height }
+          })}
+        </button>
         <div
           style={{
             ...carouselStyle,
@@ -198,16 +209,13 @@ export default class Carousel extends Component {
             );
           })}
         </div>
-        {renderPrev({
-          disabled: prevButtonDisabled,
-          onClick: this.prev,
-          basicStyle: { height }
-        })}
-        {renderNext({
-          disabled: nextButtonDisabled,
-          onClick: this.next,
-          basicStyle: { height, right: 0 }
-        })}
+        <button style={inline}>
+          {renderNext({
+            disabled: nextButtonDisabled,
+            onClick: this.next,
+            basicStyle: { height, right: 0 }
+          })}
+        </button>
       </div>
     );
   }
