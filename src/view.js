@@ -47,6 +47,8 @@ export default class Carousel extends Component {
   constructor(props) {
     super();
     this.reactChildren = React.Children.toArray(props.children);
+    debugger; //eslint-disable-line
+    console.log(props.children);
   }
   componentDidMount() {
     if (this.element) {
@@ -119,6 +121,7 @@ export default class Carousel extends Component {
     } = this.state;
 
     const count = React.Children.count(children);
+
     if (!children || count < 0) {
       return <div>Gimme some children</div>;
     }
