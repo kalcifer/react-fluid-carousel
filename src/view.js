@@ -44,6 +44,7 @@ export default class Carousel extends Component {
   };
   element = null;
   reactChildren = [];
+  showCarousel = false;
   constructor(props) {
     super();
     this.reactChildren = React.Children.toArray(props.children);
@@ -55,11 +56,16 @@ export default class Carousel extends Component {
       const dimensions = this.element.getBoundingClientRect();
       const parentDimensions = this.element.parentElement.getBoundingClientRect();
       const count = React.Children.count(this.props.children);
+      const parentWidth = parentDimensions.width;
+      const fullWidth = dimensions.width * count + padding * count * 2;
+      if (fullWidth > parentWidth) {
+        this.showCarousel = true;
+      }
       this.setState({
         height: dimensions.height,
         width: dimensions.width,
-        parentWidth: parentDimensions.width,
-        fullWidth: dimensions.width * count + padding * count * 2
+        parentWidth,
+        fullWidth
       });
     }
   }
@@ -150,31 +156,34 @@ export default class Carousel extends Component {
     return (
       <div style={{ ...containerStyle, width: parentWidth }}>
         <div style={{ position: "absolute", zIndex: "5" }}>
-          {pageArray.map((item, index) => {
-            const isEnabled = position === index * this.state.width * padding;
-            return (
-              <span
-                style={{
-                  cursor: "pointer",
-                  display: "inline-block",
-                  marginRight: "5px"
-                }}
-                onClick={() =>
-                  this.progress(index * this.state.width * padding)
-                }
-              >
-                {renderProgress({ enabled: isEnabled })}
-              </span>
-            );
-          })}
+          {this.showCarousel &&
+            pageArray.map((item, index) => {
+              const isEnabled = position === index * this.state.width * padding;
+              return (
+                <span
+                  style={{
+                    cursor: "pointer",
+                    display: "inline-block",
+                    marginRight: "5px"
+                  }}
+                  onClick={() =>
+                    this.progress(index * this.state.width * padding)
+                  }
+                >
+                  {renderProgress({ enabled: isEnabled })}
+                </span>
+              );
+            })}
         </div>
-        <button style={inline}>
-          {renderPrev({
-            disabled: prevButtonDisabled,
-            onClick: this.prev,
-            basicStyle: { height }
-          })}
-        </button>
+        {this.showCarousel && (
+          <button style={inline}>
+            {renderPrev({
+              disabled: prevButtonDisabled,
+              onClick: this.prev,
+              basicStyle: { height }
+            })}
+          </button>
+        )}
         <div
           style={{
             ...carouselStyle,
@@ -212,13 +221,15 @@ export default class Carousel extends Component {
             );
           })}
         </div>
-        <button style={inline}>
-          {renderNext({
-            disabled: nextButtonDisabled,
-            onClick: this.next,
-            basicStyle: { height, right: 0 }
-          })}
-        </button>
+        {this.showCarousel && (
+          <button style={inline}>
+            {renderNext({
+              disabled: nextButtonDisabled,
+              onClick: this.next,
+              basicStyle: { height, right: 0 }
+            })}
+          </button>
+        )}
       </div>
     );
   }
