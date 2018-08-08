@@ -48,8 +48,6 @@ export default class Carousel extends Component {
   constructor(props) {
     super();
     this.reactChildren = React.Children.toArray(props.children);
-    debugger; //eslint-disable-line
-    console.log(props.children);
   }
   componentDidMount() {
     if (this.element) {
@@ -74,16 +72,6 @@ export default class Carousel extends Component {
     this.element = element;
   };
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   if (
-  //     this.state.height === nextState.height &&
-  //     this.state.position === nextState.position &&
-  //     this.state.hoveredItem === nextState.hoveredItem
-  //   ) {
-  //     return false;
-  //   }
-  //   return true;
-  // }
   prev = () => {
     if (this.state.position !== 0) {
       this.setState({
