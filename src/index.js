@@ -57,11 +57,18 @@ const ProgressUnit = ({ enabled }) => {
   return <div style={style} />;
 };
 
-export default ({ children, renderPrev, renderNext, renderProgress }) => (
+export default ({
+  children,
+  renderPrev,
+  renderNext,
+  renderProgress,
+  ...props
+}) => (
   <Carousel
     renderPrev={renderPrev || PrevButton}
     renderNext={renderNext || NextButton}
     renderProgress={renderProgress || ProgressUnit}
+    {...props}
   >
     {children}
   </Carousel>

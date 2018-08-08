@@ -27,11 +27,16 @@ const carouselObjStyle = {
 };
 
 const inline = {
-  display: "inline"
+  display: "inline",
+  border: "none"
 };
 
 const padding = 10;
 export default class Carousel extends Component {
+  static defaultProps = {
+    slidesToScroll: null,
+    speed: 10
+  };
   state = {
     height: null,
     width: null,
@@ -73,17 +78,21 @@ export default class Carousel extends Component {
   };
 
   prev = () => {
-    if (this.state.position !== 0) {
+    const { position, parentWidth, width } = this.state;
+    if (position !== 0) {
+      const slidesToScroll = this.props.slidesToScroll || parentWidth / width;
       this.setState({
-        position: this.state.position - this.state.width - padding,
+        position: position - width * slidesToScroll - padding,
         prev: true,
         next: false
       });
     }
   };
   next = () => {
+    const { position, parentWidth, width } = this.state;
+    const slidesToScroll = this.props.slidesToScroll || parentWidth / width;
     this.setState({
-      position: this.state.position + this.state.width + padding,
+      position: position + width * slidesToScroll + padding,
       prev: false,
       next: true
     });
@@ -104,7 +113,13 @@ export default class Carousel extends Component {
     });
   };
   render() {
-    const { children, renderPrev, renderNext, renderProgress } = this.props;
+    const {
+      children,
+      renderPrev,
+      renderNext,
+      renderProgress,
+      speed
+    } = this.props;
     const {
       hoveredItem,
       height,
@@ -178,7 +193,7 @@ export default class Carousel extends Component {
             height,
             width: fullWidth,
             transform: `translateX(${translateValue}px)`,
-            transition: "1s"
+            transition: `${speed}ms`
           }}
         >
           {this.reactChildren.map(child => {
@@ -247,6 +262,5 @@ export const findPrevNextObjs = (findKey, children) => {
       prevKeyList.push(prevObj.key);
     }
   });
-  debugger; //eslint-disable-line
   return [prevKeyList, nextKeyList];
 };
