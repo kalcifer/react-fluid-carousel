@@ -67,6 +67,7 @@ export default class Carousel extends Component {
       this.setState({
         height: dimensions.height,
         width: dimensions.width,
+        top: dimensions.top,
         parentWidth,
         fullWidth
       });
@@ -80,7 +81,8 @@ export default class Carousel extends Component {
   prev = () => {
     const { position, parentWidth, width } = this.state;
     if (position !== 0) {
-      const slidesToScroll = this.props.slidesToScroll || parentWidth / width;
+      const slidesToScroll =
+        this.props.slidesToScroll || Math.ceil(parentWidth / width);
       this.setState({
         position: position - width * slidesToScroll - padding,
         prev: true,
@@ -90,7 +92,8 @@ export default class Carousel extends Component {
   };
   next = () => {
     const { position, parentWidth, width } = this.state;
-    const slidesToScroll = this.props.slidesToScroll || parentWidth / width;
+    const slidesToScroll =
+      this.props.slidesToScroll || Math.ceil(parentWidth / width);
     this.setState({
       position: position + width * slidesToScroll + padding,
       prev: false,
@@ -183,7 +186,7 @@ export default class Carousel extends Component {
             {renderPrev({
               disabled: prevButtonDisabled,
               onClick: this.prev,
-              basicStyle: { height }
+              basicStyle: { height, top: `${this.state.top}px` }
             })}
           </button>
         )}
@@ -229,7 +232,7 @@ export default class Carousel extends Component {
             {renderNext({
               disabled: nextButtonDisabled,
               onClick: this.next,
-              basicStyle: { height, right: 0 }
+              basicStyle: { height, right: 0, top: `${this.state.top}px` }
             })}
           </button>
         )}
