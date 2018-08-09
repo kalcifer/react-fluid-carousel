@@ -1,4 +1,5 @@
 import React, { Component, Children } from "react";
+import { FixedSizeList as List } from "react-window";
 import NodeResolver from "react-node-resolver";
 import { findPrevNextObjs } from "./util";
 import {
@@ -12,6 +13,7 @@ import {
   carouselStyle,
   inline
 } from "./const";
+
 export default class Carousel extends Component {
   static defaultProps = {
     slidesToScroll: null,
@@ -177,18 +179,17 @@ export default class Carousel extends Component {
             })}
           </button>
         )}
-        <div
-          style={{
-            ...carouselStyle,
-            height,
-            width: fullWidth,
-            transform: `translateX(${translateValue}px)`,
-            transition: `${speed}ms`
-          }}
+
+        <List
+          direction="horizontal"
+          height={height + 20}
+          itemCount={count}
+          itemSize={width + 20}
+          width={parentWidth}
+          useIsScrolling={false}
         >
-          {this.reactChildren.map(child => {
+          {({ index: key, style }) => {
             let childStyles = {};
-            const { key } = child;
             if (key === hoveredItem) {
               childStyles = childHoverVals;
             }
@@ -203,17 +204,23 @@ export default class Carousel extends Component {
               transition: "0.5s",
               cursor: "pointer"
             };
+
             return (
               <div
-                style={{ height, width, ...childStyles, ...carouselObjStyle }}
+                style={{
+                  ...childStyles,
+                  ...carouselObjStyle,
+                  ...style,
+                  ...{ padding: "10px" }
+                }}
                 onMouseEnter={() => this.onMouseEnter(key)}
                 onMouseLeave={() => this.onMouseLeave(key)}
               >
-                {child}
+                {this.reactChildren[key]}
               </div>
             );
-          })}
-        </div>
+          }}
+        </List>
         {this.showCarousel && (
           <button style={inline}>
             {renderNext({
