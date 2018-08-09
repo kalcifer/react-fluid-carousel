@@ -1,4 +1,4 @@
-import { findPrevNextObjs } from "../src/view";
+import { findPrevNextObjs } from "../src/util";
 
 const children = [
   {

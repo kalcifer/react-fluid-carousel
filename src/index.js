@@ -3,7 +3,6 @@ import Carousel from "./view";
 
 const prevNextStyle = {
   position: "absolute",
-  marginTop: "20px",
   zIndex: "10",
   content: "<",
   width: "40px",

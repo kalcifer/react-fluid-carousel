@@ -1,37 +1,17 @@
 import React, { Component, Children } from "react";
 import NodeResolver from "react-node-resolver";
-
-const childHoverVals = {
-  transform: "scale(1.2)"
-};
-
-let childBeforeHoverVals = {
-  transform: "translateX(-10px)"
-};
-let childAfterHoverVals = {
-  transform: "translateX(10px)"
-};
-
-const containerStyle = {
-  overflowX: "hidden",
-  position: "relative"
-};
-
-const carouselStyle = {
-  display: "flex",
-  padding: "20px 0"
-};
-
-const carouselObjStyle = {
-  padding: "0 10px"
-};
-
-const inline = {
-  display: "inline",
-  border: "none"
-};
-
-const padding = 10;
+import { findPrevNextObjs } from "./util";
+import {
+  padding,
+  addTop,
+  childAfterHoverVals,
+  childBeforeHoverVals,
+  childHoverVals,
+  containerStyle,
+  carouselObjStyle,
+  carouselStyle,
+  inline
+} from "./const";
 export default class Carousel extends Component {
   static defaultProps = {
     slidesToScroll: null,
@@ -67,7 +47,7 @@ export default class Carousel extends Component {
       this.setState({
         height: dimensions.height,
         width: dimensions.width,
-        top: dimensions.top,
+        top: dimensions.top + addTop,
         parentWidth,
         fullWidth
       });
@@ -161,7 +141,14 @@ export default class Carousel extends Component {
     const pageArray = new Array(noOfPages).fill(1);
     return (
       <div style={{ ...containerStyle, width: parentWidth }}>
-        <div style={{ position: "absolute", zIndex: "5" }}>
+        <div
+          style={{
+            position: "absolute",
+            zIndex: "5",
+            height: "20px",
+            boxSizing: "border-box"
+          }}
+        >
           {this.showCarousel &&
             pageArray.map((item, index) => {
               const isEnabled = position === index * this.state.width * padding;
@@ -240,30 +227,3 @@ export default class Carousel extends Component {
     );
   }
 }
-
-export const findPrevNextObjs = (findKey, children) => {
-  let prevKeyList = [];
-  let nextKeyList = [];
-  let prevObj;
-  let currentObj;
-  let nextObj;
-  children.forEach(child => {
-    if (currentObj && !nextObj) {
-      nextObj = child;
-      nextKeyList.push(child.key);
-    } else if (currentObj && nextObj && nextKeyList.length > 0) {
-      nextKeyList.push(child.key);
-    }
-    if (child.key === findKey) {
-      currentObj = child;
-    }
-    if (prevObj && !currentObj && !nextObj) {
-      prevKeyList.push(child.key);
-    }
-    if (!prevObj && !currentObj) {
-      prevObj = child;
-      prevKeyList.push(prevObj.key);
-    }
-  });
-  return [prevKeyList, nextKeyList];
-};
