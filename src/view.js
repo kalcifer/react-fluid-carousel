@@ -186,7 +186,7 @@ export default class Carousel extends Component {
           itemCount={count}
           itemSize={width + 20}
           width={parentWidth}
-          useIsScrolling={false}
+          style={{ overflow: "hidden" }}
         >
           {({ index: key, style }) => {
             let childStyles = {};
