@@ -1,7 +1,7 @@
 import React, { Component, Children } from "react";
 import { FixedSizeList as List } from "react-window";
 import NodeResolver from "react-node-resolver";
-import Scroller from "./scroller";
+import AnimatedList from "./animated-list";
 import { findPrevNextObjs } from "./util";
 import {
   padding,
@@ -184,12 +184,8 @@ export default class Carousel extends Component {
             })}
           </button>
         )}
-        <Scroller
-          outerRef={outerRef && outerRef.current}
-          position={this.state.position * (this.state.width + padding * 2)}
-          duration={this.props.speed}
-        />
-        <List
+
+        <AnimatedList
           direction="horizontal"
           height={height + 20}
           itemCount={count}
@@ -198,6 +194,8 @@ export default class Carousel extends Component {
           style={{ overflow: "hidden" }}
           ref={listRef}
           outerRef={outerRef}
+          duration={speed}
+          scrollToItem={this.state.position}
         >
           {({ index: key, style }) => {
             let childStyles = {};
@@ -231,7 +229,7 @@ export default class Carousel extends Component {
               </div>
             );
           }}
-        </List>
+        </AnimatedList>
         {this.showCarousel && (
           <button style={inline}>
             {renderNext({

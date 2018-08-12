@@ -8,7 +8,8 @@ const prevNextStyle = {
   width: "40px",
   background: "black",
   border: "black",
-  opacity: "0.5"
+  opacity: "0.5",
+  top: "28px"
 };
 
 const noHoverStyle = {

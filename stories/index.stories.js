@@ -42,7 +42,7 @@ storiesOf("Carousel", module)
   })
   .add("Moving 5 slides at a time", () => {
     const arr = new Array(30).fill(1);
-    return buildCarousel(arr, { slidesToScroll: 5 });
+    return buildCarousel(arr, { slidesToScroll: 5, speed: 1000 });
   })
   .add("Speed of 5 ms", () => {
     const arr = new Array(30).fill(1);
