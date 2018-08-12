@@ -1,6 +1,7 @@
 import React, { Component, Children } from "react";
 import { FixedSizeList as List } from "react-window";
 import NodeResolver from "react-node-resolver";
+import Scroller from "./scroller";
 import { findPrevNextObjs } from "./util";
 import {
   padding,
@@ -14,6 +15,7 @@ import {
   inline
 } from "./const";
 const listRef = React.createRef();
+const outerRef = React.createRef();
 export default class Carousel extends Component {
   static defaultProps = {
     slidesToScroll: null,
@@ -66,14 +68,11 @@ export default class Carousel extends Component {
     if (position !== 0) {
       const slidesToScroll =
         this.props.slidesToScroll || Math.ceil(parentWidth / width);
-      this.setState(
-        {
-          position: position - slidesToScroll,
-          prev: true,
-          next: false
-        },
-        () => listRef.current.scrollToItem(this.state.position)
-      );
+      this.setState({
+        position: position - slidesToScroll,
+        prev: true,
+        next: false
+      });
     }
   };
   next = () => {
@@ -82,14 +81,11 @@ export default class Carousel extends Component {
       this.props.slidesToScroll || Math.ceil(parentWidth / width);
     const count = React.Children.count(this.props.children);
     const nextPos = (position + slidesToScroll) % count;
-    this.setState(
-      {
-        position: nextPos,
-        prev: false,
-        next: true
-      },
-      () => listRef.current.scrollToItem(this.state.position)
-    );
+    this.setState({
+      position: nextPos,
+      prev: false,
+      next: true
+    });
   };
   progress = pos => {
     this.setState({
@@ -188,7 +184,11 @@ export default class Carousel extends Component {
             })}
           </button>
         )}
-
+        <Scroller
+          outerRef={outerRef && outerRef.current}
+          position={this.state.position * (this.state.width + padding * 2)}
+          duration={this.props.speed}
+        />
         <List
           direction="horizontal"
           height={height + 20}
@@ -197,6 +197,7 @@ export default class Carousel extends Component {
           width={parentWidth}
           style={{ overflow: "hidden" }}
           ref={listRef}
+          outerRef={outerRef}
         >
           {({ index: key, style }) => {
             let childStyles = {};
