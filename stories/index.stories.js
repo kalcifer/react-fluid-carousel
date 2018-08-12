@@ -21,7 +21,9 @@ const buildCarousel = (arr, props) => {
                 16
               )}` // thanks paul irish!https://www.paulirish.com/2009/random-hex-color-code-snippets/
             }}
-          />
+          >
+            {key}
+          </div>
         );
       })}
     </Carousel>

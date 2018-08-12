@@ -13,7 +13,7 @@ import {
   carouselStyle,
   inline
 } from "./const";
-
+const listRef = React.createRef();
 export default class Carousel extends Component {
   static defaultProps = {
     slidesToScroll: null,
@@ -32,6 +32,7 @@ export default class Carousel extends Component {
   element = null;
   reactChildren = [];
   showCarousel = false;
+
   constructor(props) {
     super();
     this.reactChildren = React.Children.toArray(props.children);
@@ -65,22 +66,30 @@ export default class Carousel extends Component {
     if (position !== 0) {
       const slidesToScroll =
         this.props.slidesToScroll || Math.ceil(parentWidth / width);
-      this.setState({
-        position: position - width * slidesToScroll - padding,
-        prev: true,
-        next: false
-      });
+      this.setState(
+        {
+          position: position - slidesToScroll,
+          prev: true,
+          next: false
+        },
+        () => listRef.current.scrollToItem(this.state.position)
+      );
     }
   };
   next = () => {
     const { position, parentWidth, width } = this.state;
     const slidesToScroll =
       this.props.slidesToScroll || Math.ceil(parentWidth / width);
-    this.setState({
-      position: position + width * slidesToScroll + padding,
-      prev: false,
-      next: true
-    });
+    const count = React.Children.count(this.props.children);
+    const nextPos = (position + slidesToScroll) % count;
+    this.setState(
+      {
+        position: nextPos,
+        prev: false,
+        next: true
+      },
+      () => listRef.current.scrollToItem(this.state.position)
+    );
   };
   progress = pos => {
     this.setState({
@@ -187,6 +196,7 @@ export default class Carousel extends Component {
           itemSize={width + 20}
           width={parentWidth}
           style={{ overflow: "hidden" }}
+          ref={listRef}
         >
           {({ index: key, style }) => {
             let childStyles = {};
