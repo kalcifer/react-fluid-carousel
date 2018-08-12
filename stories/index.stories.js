@@ -12,7 +12,7 @@ const buildCarousel = (arr, props) => {
       {arr.map((val, key) => {
         return (
           <div
-            key={key}
+            key={JSON.stringify(key)}
             style={{
               width: "60px",
               height: "80px",

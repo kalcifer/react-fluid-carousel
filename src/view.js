@@ -34,10 +34,11 @@ export default class Carousel extends Component {
   element = null;
   reactChildren = [];
   showCarousel = false;
-
+  childRefs = [];
   constructor(props) {
     super();
     this.reactChildren = React.Children.toArray(props.children);
+    this.childRefs = this.reactChildren.map(child => React.createRef());
   }
   componentDidMount() {
     if (this.element) {
@@ -133,7 +134,7 @@ export default class Carousel extends Component {
     let prevKeyList = [];
     let nextKeyList = [];
     if (hoveredItem) {
-      const lists = findPrevNextObjs(hoveredItem, this.reactChildren);
+      const lists = findPrevNextObjs(hoveredItem, this.childRefs);
       prevKeyList = lists[0];
       nextKeyList = lists[1];
     }
@@ -199,18 +200,18 @@ export default class Carousel extends Component {
         >
           {({ index: key, style }) => {
             let childStyles = {};
-            if (key === hoveredItem) {
+            if (key == hoveredItem) {
               childStyles = childHoverVals;
             }
-            if (prevKeyList.indexOf(key) > -1) {
+            if (prevKeyList.indexOf(`${key}`) > -1) {
               childStyles = childBeforeHoverVals;
             }
-            if (nextKeyList.indexOf(key) > -1) {
+            if (nextKeyList.indexOf(`${key}`) > -1) {
               childStyles = childAfterHoverVals;
             }
             childStyles = {
               ...childStyles,
-              transition: "0.5s",
+              transition: "transform 5s",
               cursor: "pointer"
             };
 
@@ -222,6 +223,8 @@ export default class Carousel extends Component {
                   ...style,
                   ...{ padding: "10px" }
                 }}
+                ref={this.childRefs[key]}
+                data-key={key}
                 onMouseEnter={() => this.onMouseEnter(key)}
                 onMouseLeave={() => this.onMouseLeave(key)}
               >
