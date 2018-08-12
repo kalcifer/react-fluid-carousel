@@ -33,6 +33,7 @@
     "babel-runtime": "^6.26.0"
   },
   "dependencies": {
-    "react-node-resolver": "^2.0.0"
+    "react-node-resolver": "^2.0.0",
+    "react-window": "^1.1.1"
   }
 }

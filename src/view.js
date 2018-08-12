@@ -1,5 +1,7 @@
 import React, { Component, Children } from "react";
+import { FixedSizeList as List } from "react-window";
 import NodeResolver from "react-node-resolver";
+import AnimatedList from "./animated-list";
 import { findPrevNextObjs } from "./util";
 import {
   padding,
@@ -12,6 +14,8 @@ import {
   carouselStyle,
   inline
 } from "./const";
+const listRef = React.createRef();
+const outerRef = React.createRef();
 export default class Carousel extends Component {
   static defaultProps = {
     slidesToScroll: null,
@@ -30,9 +34,11 @@ export default class Carousel extends Component {
   element = null;
   reactChildren = [];
   showCarousel = false;
+  childRefs = [];
   constructor(props) {
     super();
     this.reactChildren = React.Children.toArray(props.children);
+    this.childRefs = this.reactChildren.map(child => React.createRef());
   }
   componentDidMount() {
     if (this.element) {
@@ -64,7 +70,7 @@ export default class Carousel extends Component {
       const slidesToScroll =
         this.props.slidesToScroll || Math.ceil(parentWidth / width);
       this.setState({
-        position: position - width * slidesToScroll - padding,
+        position: position - slidesToScroll,
         prev: true,
         next: false
       });
@@ -74,8 +80,10 @@ export default class Carousel extends Component {
     const { position, parentWidth, width } = this.state;
     const slidesToScroll =
       this.props.slidesToScroll || Math.ceil(parentWidth / width);
+    const count = React.Children.count(this.props.children);
+    const nextPos = (position + slidesToScroll) % count;
     this.setState({
-      position: position + width * slidesToScroll + padding,
+      position: nextPos,
       prev: false,
       next: true
     });
@@ -126,7 +134,7 @@ export default class Carousel extends Component {
     let prevKeyList = [];
     let nextKeyList = [];
     if (hoveredItem) {
-      const lists = findPrevNextObjs(hoveredItem, this.reactChildren);
+      const lists = findPrevNextObjs(hoveredItem, this.childRefs);
       prevKeyList = lists[0];
       nextKeyList = lists[1];
     }
@@ -177,43 +185,54 @@ export default class Carousel extends Component {
             })}
           </button>
         )}
-        <div
-          style={{
-            ...carouselStyle,
-            height,
-            width: fullWidth,
-            transform: `translateX(${translateValue}px)`,
-            transition: `${speed}ms`
-          }}
+
+        <AnimatedList
+          direction="horizontal"
+          height={height + 20}
+          itemCount={count}
+          itemSize={width + 20}
+          width={parentWidth}
+          style={{ overflow: "hidden" }}
+          ref={listRef}
+          outerRef={outerRef}
+          duration={speed}
+          scrollToItem={this.state.position}
         >
-          {this.reactChildren.map(child => {
+          {({ index: key, style }) => {
             let childStyles = {};
-            const { key } = child;
-            if (key === hoveredItem) {
+            if (key == hoveredItem) {
               childStyles = childHoverVals;
             }
-            if (prevKeyList.indexOf(key) > -1) {
+            if (prevKeyList.indexOf(`${key}`) > -1) {
               childStyles = childBeforeHoverVals;
             }
-            if (nextKeyList.indexOf(key) > -1) {
+            if (nextKeyList.indexOf(`${key}`) > -1) {
               childStyles = childAfterHoverVals;
             }
             childStyles = {
               ...childStyles,
-              transition: "0.5s",
+              transition: "transform 5s",
               cursor: "pointer"
             };
+
             return (
               <div
-                style={{ height, width, ...childStyles, ...carouselObjStyle }}
+                style={{
+                  ...childStyles,
+                  ...carouselObjStyle,
+                  ...style,
+                  ...{ padding: "10px" }
+                }}
+                ref={this.childRefs[key]}
+                data-key={key}
                 onMouseEnter={() => this.onMouseEnter(key)}
                 onMouseLeave={() => this.onMouseLeave(key)}
               >
-                {child}
+                {this.reactChildren[key]}
               </div>
             );
-          })}
-        </div>
+          }}
+        </AnimatedList>
         {this.showCarousel && (
           <button style={inline}>
             {renderNext({

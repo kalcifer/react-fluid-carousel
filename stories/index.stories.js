@@ -12,7 +12,7 @@ const buildCarousel = (arr, props) => {
       {arr.map((val, key) => {
         return (
           <div
-            key={key}
+            key={JSON.stringify(key)}
             style={{
               width: "60px",
               height: "80px",
@@ -21,7 +21,9 @@ const buildCarousel = (arr, props) => {
                 16
               )}` // thanks paul irish!https://www.paulirish.com/2009/random-hex-color-code-snippets/
             }}
-          />
+          >
+            {key}
+          </div>
         );
       })}
     </Carousel>
@@ -40,7 +42,7 @@ storiesOf("Carousel", module)
   })
   .add("Moving 5 slides at a time", () => {
     const arr = new Array(30).fill(1);
-    return buildCarousel(arr, { slidesToScroll: 5 });
+    return buildCarousel(arr, { slidesToScroll: 5, speed: 1000 });
   })
   .add("Speed of 5 ms", () => {
     const arr = new Array(30).fill(1);
