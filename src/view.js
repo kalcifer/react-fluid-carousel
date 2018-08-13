@@ -1,6 +1,7 @@
-import React, { Component, Children } from "react";
+import React, { Component, Children, Fragment } from "react";
 import { FixedSizeList as List } from "react-window";
 import NodeResolver from "react-node-resolver";
+import { Transition, TransitionGroup } from "react-transition-group";
 import AnimatedList from "./animated-list";
 import { findPrevNextObjs } from "./util";
 import {
@@ -185,54 +186,62 @@ export default class Carousel extends Component {
             })}
           </button>
         )}
+        <TransitionGroup component={null}>
+          <AnimatedList
+            direction="horizontal"
+            height={height + 20}
+            itemCount={count}
+            itemSize={width + 20}
+            width={parentWidth}
+            style={{ overflow: "hidden" }}
+            ref={listRef}
+            outerRef={outerRef}
+            duration={speed}
+            scrollToItem={this.state.position}
+          >
+            {({ index: key, style }) => {
+              let childStyles = {};
+              if (key == hoveredItem) {
+                childStyles = childHoverVals;
+              }
+              if (prevKeyList.indexOf(`${key}`) > -1) {
+                childStyles = childBeforeHoverVals;
+              }
+              if (nextKeyList.indexOf(`${key}`) > -1) {
+                childStyles = childAfterHoverVals;
+              }
+              childStyles = {
+                ...childStyles,
+                transition: "transform 1000ms",
+                cursor: "pointer"
+              };
 
-        <AnimatedList
-          direction="horizontal"
-          height={height + 20}
-          itemCount={count}
-          itemSize={width + 20}
-          width={parentWidth}
-          style={{ overflow: "hidden" }}
-          ref={listRef}
-          outerRef={outerRef}
-          duration={speed}
-          scrollToItem={this.state.position}
-        >
-          {({ index: key, style }) => {
-            let childStyles = {};
-            if (key == hoveredItem) {
-              childStyles = childHoverVals;
-            }
-            if (prevKeyList.indexOf(`${key}`) > -1) {
-              childStyles = childBeforeHoverVals;
-            }
-            if (nextKeyList.indexOf(`${key}`) > -1) {
-              childStyles = childAfterHoverVals;
-            }
-            childStyles = {
-              ...childStyles,
-              transition: "transform 5s",
-              cursor: "pointer"
-            };
-
-            return (
-              <div
-                style={{
-                  ...childStyles,
-                  ...carouselObjStyle,
-                  ...style,
-                  ...{ padding: "10px" }
-                }}
-                ref={this.childRefs[key]}
-                data-key={key}
-                onMouseEnter={() => this.onMouseEnter(key)}
-                onMouseLeave={() => this.onMouseLeave(key)}
-              >
-                {this.reactChildren[key]}
-              </div>
-            );
-          }}
-        </AnimatedList>
+              return (
+                <Transition timeout={2000}>
+                  {status => {
+                    return (
+                      <div
+                        style={{
+                          ...childStyles,
+                          ...carouselObjStyle,
+                          ...style,
+                          ...{ padding: "10px" }
+                        }}
+                        key={key}
+                        ref={this.childRefs[key]}
+                        data-key={key}
+                        onMouseEnter={() => this.onMouseEnter(key)}
+                        onMouseLeave={() => this.onMouseLeave(key)}
+                      >
+                        {this.reactChildren[key]}
+                      </div>
+                    );
+                  }}
+                </Transition>
+              );
+            }}
+          </AnimatedList>
+        </TransitionGroup>
         {this.showCarousel && (
           <button style={inline}>
             {renderNext({
