@@ -1,98 +1,71 @@
-import React, { Component, Children } from "react";
-import { FixedSizeList as List } from "react-window";
-import NodeResolver from "react-node-resolver";
+import React from "react";
 import AnimatedList from "./animated-list";
-import { findPrevNextObjs } from "./util";
 import ItemRenderer from "./itemRenderer";
-import {
-  padding,
-  addTop,
-  childAfterHoverVals,
-  childBeforeHoverVals,
-  childHoverVals,
-  containerStyle,
-  carouselObjStyle,
-  carouselStyle,
-  inline
-} from "./const";
-const listRef = React.createRef();
-const outerRef = React.createRef();
-export default class Carousel extends Component {
+import NodeResolver from "react-node-resolver";
+import { padding, addTop, inline } from "./const";
+import { getChildStyles } from "./util";
+class Carousel extends React.Component {
   static defaultProps = {
     slidesToScroll: null,
-    speed: 10
+    speed: 10,
+    scale: 1.2
   };
+
+  reactChildren = [];
+  element = null;
+  pages = null;
+  pageItems = 0;
+  count = null;
+  lastPage = null;
+  constructor(props) {
+    super(props);
+    this.reactChildren = React.Children.toArray(props.children);
+    this.count = React.Children.count(props.children);
+    if (props.slidesToScroll) {
+      this.pageItems = props.slidesToScroll;
+    }
+  }
   state = {
+    currentPage: 1,
     height: null,
     width: null,
     parentWidth: null,
-    position: 0,
     fullWidth: null,
-    prev: false,
-    next: false,
-    hoveredItem: null
+    top: null,
+    hoveredItem: null,
+    scaledHeight: null,
+    scaledWidth: null
   };
-  element = null;
-  reactChildren = [];
-  showCarousel = false;
-  childRefs = [];
-  constructor(props) {
-    super();
-    this.reactChildren = React.Children.toArray(props.children);
-    this.childRefs = this.reactChildren.map(child => React.createRef());
-  }
   componentDidMount() {
     if (this.element) {
       const dimensions = this.element.getBoundingClientRect();
       const parentDimensions = this.element.parentElement.getBoundingClientRect();
-      const count = React.Children.count(this.props.children);
+
       const parentWidth = parentDimensions.width;
-      const fullWidth = dimensions.width * count + padding * count * 2;
+      const scaledWidth = dimensions.width * this.props.scale;
+      const fullWidth = scaledWidth * this.count;
+      this.lastPage = Math.floor(parentWidth / scaledWidth);
+      if (!this.pageItems)
+        this.pageItems = Math.abs((this.count - this.lastPage) / 2);
       if (fullWidth > parentWidth) {
         this.showCarousel = true;
+        this.pages = Math.ceil(
+          (this.count - this.lastPage) / this.pageItems + 1
+        );
       }
       this.setState({
         height: dimensions.height,
         width: dimensions.width,
+        scaledHeight: dimensions.height * this.props.scale,
+        scaledWidth,
         top: dimensions.top + addTop,
         parentWidth,
         fullWidth
       });
     }
   }
-
   getRef = element => {
     this.element = element;
-  };
-
-  prev = () => {
-    const { position, parentWidth, width } = this.state;
-    if (position !== 0) {
-      const slidesToScroll =
-        this.props.slidesToScroll || Math.ceil(parentWidth / width);
-      this.setState({
-        position: position - slidesToScroll,
-        prev: true,
-        next: false
-      });
-    }
-  };
-  next = () => {
-    const { position, parentWidth, width } = this.state;
-    const slidesToScroll =
-      this.props.slidesToScroll || Math.ceil(parentWidth / width);
-    const count = React.Children.count(this.props.children);
-    const nextPos = (position + slidesToScroll) % count;
-    this.setState({
-      position: nextPos,
-      prev: false,
-      next: true
-    });
-  };
-  progress = pos => {
-    this.setState({
-      position: pos
-    });
   };
   onMouseEnter = key => {
     this.setState({
@@ -104,138 +77,117 @@ export default class Carousel extends Component {
       hoveredItem: null
     });
   };
+  progress = pageNo => {
+    this.setState({
+      currentPage: pageNo
+    });
+  };
+  prev = () => {
+    this.setState(({ currentPage }) => {
+      if (1 < currentPage <= this.pages) {
+        return { currentPage: currentPage - 1 };
+      } else return { currentPage };
+    });
+  };
+  next = () => {
+    this.setState(({ currentPage }) => {
+      if (1 <= currentPage < this.pages) {
+        return { currentPage: currentPage + 1 };
+      } else return { currentPage };
+    });
+  };
   render() {
     const {
-      children,
-      renderPrev,
-      renderNext,
-      renderProgress,
-      speed
-    } = this.props;
+      onMouseEnter,
+      onMouseLeave,
+      props,
+      state,
+      reactChildren,
+      getRef,
+      prev,
+      next,
+      pages,
+      pageItems,
+      showCarousel,
+      count
+    } = this;
+    const { children, renderPrev, renderNext, renderProgress } = props;
     const {
-      hoveredItem,
       height,
-      position,
+      scaledHeight,
+      scaledWidth,
       parentWidth,
-      fullWidth,
-      width
-    } = this.state;
-
-    const count = React.Children.count(children);
+      hoveredItem,
+      position,
+      currentPage,
+      top
+    } = state;
 
     if (!children || count < 0) {
       return <div>Gimme some children</div>;
     }
     if (!height) {
-      const firstChild = this.reactChildren[0];
-      return <NodeResolver innerRef={this.getRef}>{firstChild}</NodeResolver>;
+      const firstChild = reactChildren[0];
+      return <NodeResolver innerRef={getRef}>{firstChild}</NodeResolver>;
     }
-
-    const translateValue = -position;
-    let prevKeyList = [];
-    let nextKeyList = [];
-    if (hoveredItem) {
-      const lists = findPrevNextObjs(hoveredItem, this.childRefs);
-      prevKeyList = lists[0];
-      nextKeyList = lists[1];
-    }
-    const itemData = this.reactChildren.map((child, key) => {
-      let childStyles = {};
-      if (key == hoveredItem) {
-        childStyles = childHoverVals;
-      }
-      if (prevKeyList.indexOf(`${key}`) > -1) {
-        childStyles = childBeforeHoverVals;
-      }
-      if (nextKeyList.indexOf(`${key}`) > -1) {
-        childStyles = childAfterHoverVals;
-      }
-      childStyles = {
-        ...childStyles,
-        transition: "transform 500ms",
-        cursor: "pointer"
-      };
-      return {
-        child,
-        childStyles,
-        childRef: this.childRefs[key],
-        onMouseEnter: () => this.onMouseEnter(key),
-        onMouseLeave: () => this.onMouseLeave(key)
-      };
+    const itemData = reactChildren.map((child, key) => {
+      const childStyles = getChildStyles(hoveredItem, key);
+      return { child, childStyles, key, onMouseEnter, onMouseLeave };
     });
-    const prevButtonDisabled =
-      this.state.position === 0 || this.state.hoveredItem;
-    const nextButtonDisabled =
-      this.state.position > this.state.fullWidth - this.state.parentWidth ||
-      this.state.hoveredItem;
-
-    const pageSize = Math.ceil(parentWidth / width);
-    const noOfPages = Math.ceil(count / pageSize);
-    const pageArray = new Array(noOfPages).fill(1);
+    const prevButtonDisabled = currentPage === 1 || hoveredItem;
+    const nextButtonDisabled = currentPage === pages || hoveredItem;
+    const pageArray = new Array(pages).fill(1);
     return (
-      <div style={{ ...containerStyle, width: parentWidth }}>
-        <div
-          style={{
-            position: "absolute",
-            zIndex: "5",
-            height: "20px",
-            boxSizing: "border-box"
-          }}
-        >
-          {this.showCarousel &&
-            pageArray.map((item, index) => {
-              const isEnabled = position === index * this.state.width * padding;
-              return (
-                <span
-                  style={{
-                    cursor: "pointer",
-                    display: "inline-block",
-                    marginRight: "5px"
-                  }}
-                  onClick={() =>
-                    this.progress(index * this.state.width * padding)
-                  }
-                >
-                  {renderProgress({ enabled: isEnabled })}
-                </span>
-              );
-            })}
-        </div>
-        {this.showCarousel && (
+      <React.Fragment>
+        {showCarousel &&
+          pageArray.map((item, pageNo) => {
+            const isEnabled = pageNo === currentPage - 1;
+            return (
+              <span
+                style={{
+                  cursor: "pointer",
+                  display: "inline-block",
+                  marginRight: "5px"
+                }}
+                onClick={() => this.progress(pageNo + 1)}
+              >
+                {renderProgress({ enabled: isEnabled })}
+              </span>
+            );
+          })}
+        {showCarousel && (
           <button style={inline}>
             {renderPrev({
               disabled: prevButtonDisabled,
-              onClick: this.prev,
-              basicStyle: { height, top: `${this.state.top}px` }
+              onClick: prev,
+              basicStyle: { height, top: `${top}px` }
             })}
           </button>
         )}
-
         <AnimatedList
-          direction="horizontal"
-          height={height + 20}
-          itemCount={count}
-          itemSize={width + 20}
           itemData={itemData}
+          height={scaledHeight}
+          itemSize={scaledWidth}
+          direction="horizontal"
+          itemCount={count}
           width={parentWidth}
           style={{ overflow: "hidden" }}
-          ref={listRef}
-          outerRef={outerRef}
-          duration={speed}
-          scrollToItem={this.state.position}
+          scrollToItem={(currentPage - 1) * pageItems}
         >
           {ItemRenderer}
         </AnimatedList>
-        {this.showCarousel && (
+        {showCarousel && (
           <button style={inline}>
             {renderNext({
               disabled: nextButtonDisabled,
-              onClick: this.next,
-              basicStyle: { height, right: 0, top: `${this.state.top}px` }
+              onClick: next,
+              basicStyle: { height, right: 0, top: `${top}px` }
             })}
           </button>
         )}
-      </div>
+      </React.Fragment>
     );
   }
 }
+
+export default Carousel;
