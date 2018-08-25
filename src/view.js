@@ -3,6 +3,7 @@ import { FixedSizeList as List } from "react-window";
 import NodeResolver from "react-node-resolver";
 import AnimatedList from "./animated-list";
 import { findPrevNextObjs } from "./util";
+import ItemRenderer from "./itemRenderer";
 import {
   padding,
   addTop,
@@ -138,6 +139,30 @@ export default class Carousel extends Component {
       prevKeyList = lists[0];
       nextKeyList = lists[1];
     }
+    const itemData = this.reactChildren.map((child, key) => {
+      let childStyles = {};
+      if (key == hoveredItem) {
+        childStyles = childHoverVals;
+      }
+      if (prevKeyList.indexOf(`${key}`) > -1) {
+        childStyles = childBeforeHoverVals;
+      }
+      if (nextKeyList.indexOf(`${key}`) > -1) {
+        childStyles = childAfterHoverVals;
+      }
+      childStyles = {
+        ...childStyles,
+        transition: "transform 500ms",
+        cursor: "pointer"
+      };
+      return {
+        child,
+        childStyles,
+        childRef: this.childRefs[key],
+        onMouseEnter: () => this.onMouseEnter(key),
+        onMouseLeave: () => this.onMouseLeave(key)
+      };
+    });
     const prevButtonDisabled =
       this.state.position === 0 || this.state.hoveredItem;
     const nextButtonDisabled =
@@ -191,6 +216,7 @@ export default class Carousel extends Component {
           height={height + 20}
           itemCount={count}
           itemSize={width + 20}
+          itemData={itemData}
           width={parentWidth}
           style={{ overflow: "hidden" }}
           ref={listRef}
@@ -198,40 +224,7 @@ export default class Carousel extends Component {
           duration={speed}
           scrollToItem={this.state.position}
         >
-          {({ index: key, style }) => {
-            let childStyles = {};
-            if (key == hoveredItem) {
-              childStyles = childHoverVals;
-            }
-            if (prevKeyList.indexOf(`${key}`) > -1) {
-              childStyles = childBeforeHoverVals;
-            }
-            if (nextKeyList.indexOf(`${key}`) > -1) {
-              childStyles = childAfterHoverVals;
-            }
-            childStyles = {
-              ...childStyles,
-              transition: "transform 5s",
-              cursor: "pointer"
-            };
-
-            return (
-              <div
-                style={{
-                  ...childStyles,
-                  ...carouselObjStyle,
-                  ...style,
-                  ...{ padding: "10px" }
-                }}
-                ref={this.childRefs[key]}
-                data-key={key}
-                onMouseEnter={() => this.onMouseEnter(key)}
-                onMouseLeave={() => this.onMouseLeave(key)}
-              >
-                {this.reactChildren[key]}
-              </div>
-            );
-          }}
+          {ItemRenderer}
         </AnimatedList>
         {this.showCarousel && (
           <button style={inline}>
