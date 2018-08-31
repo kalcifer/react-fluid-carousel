@@ -111,7 +111,7 @@ class Carousel extends React.Component {
       showCarousel,
       count
     } = this;
-    const { children, renderPrev, renderNext, renderProgress } = props;
+    const { children, renderPrev, renderNext, renderProgress, speed } = props;
     const {
       height,
       scaledHeight,
@@ -173,6 +173,7 @@ class Carousel extends React.Component {
           width={parentWidth}
           style={{ overflow: "hidden" }}
           scrollToItem={(currentPage - 1) * pageItems}
+          duration={speed}
         >
           {ItemRenderer}
         </AnimatedList>

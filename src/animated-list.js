@@ -56,6 +56,7 @@ export default class AnimatedList extends Component {
 
   _initAnimation() {
     if (this._animationStartTime) {
+      console.log("Animation in progress");
       return;
       // throw Error("Animation in progress"); // You handle this however you want.
     }
