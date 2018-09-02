@@ -91,14 +91,14 @@ class Carousel extends React.Component {
   };
   prev = () => {
     this.setState(({ currentPage }) => {
-      if (1 < currentPage <= this.pages) {
+      if (1 < currentPage && currentPage <= this.pages) {
         return { currentPage: currentPage - 1 };
       } else return { currentPage };
     });
   };
   next = () => {
     this.setState(({ currentPage }) => {
-      if (1 <= currentPage < this.pages) {
+      if (1 <= currentPage && currentPage < this.pages) {
         return { currentPage: currentPage + 1 };
       } else return { currentPage };
     });
@@ -159,8 +159,8 @@ class Carousel extends React.Component {
         diffWidth
       };
     });
-    const prevButtonDisabled = currentPage === 1 || hoveredItem;
-    const nextButtonDisabled = currentPage === pages || hoveredItem;
+    const prevButtonDisabled = currentPage === 1 || hoveredItem > -1;
+    const nextButtonDisabled = currentPage === pages || hoveredItem > -1;
     const pageArray = new Array(pages).fill(1);
     return (
       <React.Fragment>
@@ -181,13 +181,17 @@ class Carousel extends React.Component {
             );
           })}
         {showCarousel && (
-          <button style={inline}>
+          <React.Fragment>
             {renderPrev({
               disabled: prevButtonDisabled,
               onClick: prev,
-              basicStyle: { scaledHeight, top: `${top}px` }
+              basicStyle: {
+                height: scaledHeight,
+                top: `${diffHeight}px`,
+                left: 0
+              }
             })}
-          </button>
+          </React.Fragment>
         )}
         <AnimatedList
           itemData={itemData}
@@ -203,13 +207,17 @@ class Carousel extends React.Component {
           {ItemRenderer}
         </AnimatedList>
         {showCarousel && (
-          <button style={inline}>
+          <React.Fragment>
             {renderNext({
               disabled: nextButtonDisabled,
               onClick: next,
-              basicStyle: { height, right: 0, top: `${top}px` }
+              basicStyle: {
+                height: scaledHeight,
+                right: 0,
+                top: `${diffHeight}px`
+              }
             })}
-          </button>
+          </React.Fragment>
         )}
       </React.Fragment>
     );

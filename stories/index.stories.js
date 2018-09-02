@@ -6,6 +6,38 @@ import { linkTo } from "@storybook/addon-links";
 
 import Carousel from "../src";
 
+const noHoverStyle = {
+  opacity: "0.8",
+  outline: "none",
+  cursor: "pointer"
+};
+const prevNextStyle = {
+  zIndex: 10,
+  position: "absolute",
+  background: "black",
+  color: "white"
+};
+
+const PrevButton = ({ disabled, onClick, basicStyle }) => {
+  let style = disabled ? {} : noHoverStyle;
+  style = { ...style, ...prevNextStyle, ...basicStyle, top: "40px" };
+  return (
+    <div disabled={disabled} onClick={onClick} style={{ ...style }}>
+      Prev
+    </div>
+  );
+};
+
+const NextButton = ({ disabled, onClick, basicStyle }) => {
+  let style = disabled ? {} : noHoverStyle;
+  style = { ...style, ...prevNextStyle, ...basicStyle, top: "40px" };
+  return (
+    <div disabled={disabled} onClick={onClick} style={{ ...style }}>
+      Next
+    </div>
+  );
+};
+
 const buildCarousel = (arr, props) => {
   return (
     <Carousel {...props}>
@@ -75,4 +107,12 @@ storiesOf("Carousel", module)
         })}
       </Carousel>
     );
+  })
+  .add("Add nice prev/next buttons", () => {
+    const arr = new Array(25).fill(1);
+    return buildCarousel(arr, {
+      speed: 1000,
+      renderPrev: PrevButton,
+      renderNext: NextButton
+    });
   });
