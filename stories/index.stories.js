@@ -55,7 +55,7 @@ storiesOf("Carousel", module)
   .add("Diff width", () => {
     const arr = new Array(30).fill(1);
     return (
-      <Carousel slidesToScroll={3}>
+      <Carousel slidesToScroll={3} scale={1.3}>
         {arr.map((val, key) => {
           return (
             <div

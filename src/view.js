@@ -2,7 +2,7 @@ import React from "react";
 import AnimatedList from "./animated-list";
 import ItemRenderer from "./itemRenderer";
 import NodeResolver from "react-node-resolver";
-import { padding, addTop, inline } from "./const";
+import { padding, inline } from "./const";
 import { getChildStyles } from "./util";
 class Carousel extends React.Component {
   static defaultProps = {
@@ -32,7 +32,7 @@ class Carousel extends React.Component {
     parentWidth: null,
     fullWidth: null,
     top: null,
-    hoveredItem: null,
+    hoveredItem: -1,
     scaledHeight: null,
     scaledWidth: null
   };
@@ -42,8 +42,13 @@ class Carousel extends React.Component {
       const parentDimensions = this.element.parentElement.getBoundingClientRect();
 
       const parentWidth = parentDimensions.width;
-      const scaledWidth = dimensions.width * this.props.scale;
+      const width = dimensions.width;
+      const scaledWidth = width * this.props.scale;
       const fullWidth = scaledWidth * this.count;
+
+      const height = dimensions.height;
+      const scaledHeight = height * 1.1;
+      const diffHeight = scaledHeight - height;
       this.lastPage = Math.floor(parentWidth / scaledWidth);
       if (!this.pageItems)
         this.pageItems = Math.abs((this.count - this.lastPage) / 2);
@@ -54,11 +59,13 @@ class Carousel extends React.Component {
         );
       }
       this.setState({
-        height: dimensions.height,
-        width: dimensions.width,
-        scaledHeight: dimensions.height * this.props.scale,
+        height,
+        width,
+        scaledHeight,
         scaledWidth,
-        top: dimensions.top + addTop,
+        diffWidth: scaledWidth - width,
+        diffHeight,
+        top: dimensions.top * this.props.scale,
         parentWidth,
         fullWidth
       });
@@ -72,9 +79,9 @@ class Carousel extends React.Component {
       hoveredItem: key
     });
   };
-  onMouseLeave = key => {
+  onMouseLeave = () => {
     this.setState({
-      hoveredItem: null
+      hoveredItem: -1
     });
   };
   progress = pageNo => {
@@ -111,7 +118,14 @@ class Carousel extends React.Component {
       showCarousel,
       count
     } = this;
-    const { children, renderPrev, renderNext, renderProgress, speed } = props;
+    const {
+      children,
+      renderPrev,
+      renderNext,
+      renderProgress,
+      speed,
+      scale
+    } = props;
     const {
       height,
       scaledHeight,
@@ -120,7 +134,10 @@ class Carousel extends React.Component {
       hoveredItem,
       position,
       currentPage,
-      top
+      top,
+      diffWidth,
+      width,
+      diffHeight
     } = state;
 
     if (!children || count < 0) {
@@ -131,8 +148,16 @@ class Carousel extends React.Component {
       return <NodeResolver innerRef={getRef}>{firstChild}</NodeResolver>;
     }
     const itemData = reactChildren.map((child, key) => {
-      const childStyles = getChildStyles(hoveredItem, key);
-      return { child, childStyles, key, onMouseEnter, onMouseLeave };
+      const childStyles = getChildStyles(hoveredItem, key, scale, diffWidth);
+      return {
+        child,
+        childStyles,
+        key,
+        onMouseEnter,
+        onMouseLeave,
+        diffHeight,
+        diffWidth
+      };
     });
     const prevButtonDisabled = currentPage === 1 || hoveredItem;
     const nextButtonDisabled = currentPage === pages || hoveredItem;
@@ -160,18 +185,18 @@ class Carousel extends React.Component {
             {renderPrev({
               disabled: prevButtonDisabled,
               onClick: prev,
-              basicStyle: { height, top: `${top}px` }
+              basicStyle: { scaledHeight, top: `${top}px` }
             })}
           </button>
         )}
         <AnimatedList
           itemData={itemData}
           height={scaledHeight}
-          itemSize={scaledWidth}
+          itemSize={width + 10}
           direction="horizontal"
           itemCount={count}
           width={parentWidth}
-          style={{ overflow: "hidden" }}
+          style={{ overflow: "hidden", margin: `${diffHeight / 2}px 0` }}
           scrollToItem={(currentPage - 1) * pageItems}
           duration={speed}
         >

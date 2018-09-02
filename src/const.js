@@ -1,15 +1,13 @@
-export const addTop = 30;
+export const childHoverVals = scale => ({
+  transform: `scaleX(${scale}) scaleY(1.1)`
+});
 
-export const childHoverVals = {
-  transform: "scale(1.2)"
-};
-
-export let childBeforeHoverVals = {
-  transform: "translateX(-10px)"
-};
-export let childAfterHoverVals = {
-  transform: "translateX(10px)"
-};
+export let childBeforeHoverVals = diff => ({
+  transform: `translateX(-${diff}px)`
+});
+export let childAfterHoverVals = diff => ({
+  transform: `translateX(${diff}px)`
+});
 
 export const containerStyle = {
   overflowX: "hidden",
@@ -19,10 +17,6 @@ export const containerStyle = {
 export const carouselStyle = {
   display: "flex",
   padding: "20px 0"
-};
-
-export const carouselObjStyle = {
-  padding: "0 10px"
 };
 
 export const inline = {
