@@ -1,7 +1,7 @@
 {
   "name": "react-fluid-carousel",
   "description": "A carousel with great defaults",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -cw",
