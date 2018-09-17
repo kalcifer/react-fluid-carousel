@@ -2078,8 +2078,8 @@ var Carousel = function (_React$Component) {
         var dimensions = this.element.getBoundingClientRect();
         var parentDimensions = this.element.parentElement.getBoundingClientRect();
 
+        var width = dimensions.width || 200;
         var parentWidth = parentDimensions.width;
-        var width = dimensions.width;
         var scaledWidth = width * this.props.scale;
         var fullWidth = scaledWidth * this.count;
 
