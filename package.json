@@ -1,16 +1,26 @@
 {
   "name": "react-fluid-carousel",
   "description": "A carousel with great defaults",
-  "version": "0.6.0",
+  "version": "0.6.5",
+  "main": "dist/bundle.cjs.js",
+  "module": "dist/bundle.js",
+  "jsnext:main": "dist/bundle.js",
+  "files": [
+    "dist"
+  ],
+  "author": "Pavithra Kodmad",
+  "repository": "https://github.com/kalcifer/react-fluid-carousel",
+  "license": "MIT",
   "scripts": {
+    "clean": "rm -rf dist",
     "build": "rollup -c",
+    "prepublishOnly": "npm run clean && npm run build",
     "watch": "rollup -cw",
     "test": "jest --watch",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "publish-storybook": "build-storybook -c .storybook -o .out"
   },
-  "main": "dist/bundle.js",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-plugin-external-helpers": "^6.22.0",
@@ -35,5 +45,9 @@
   "dependencies": {
     "react-node-resolver": "^2.0.0",
     "react-window": "^1.1.1"
+  },
+  "peerDependencies": {
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0"
   }
 }
