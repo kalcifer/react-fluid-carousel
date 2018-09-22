@@ -41,7 +41,8 @@ class Carousel extends React.Component {
       const dimensions = this.element.getBoundingClientRect();
       const parentDimensions = this.element.parentElement.getBoundingClientRect();
 
-      const width = dimensions.width || 200;
+      const width = dimensions.width;
+      // TODO: throw if width is empty
       const parentWidth = parentDimensions.width;
       const scaledWidth = width * this.props.scale;
       const fullWidth = scaledWidth * this.count;
