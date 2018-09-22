@@ -60,7 +60,7 @@ class Carousel extends React.Component {
           this.pages = 2;
           this.pageItems = remaining;
         } else {
-          this.pages = Math.ceil(remaining / this.pageItems) + 1;
+          this.pages = Math.floor(remaining / this.pageItems) + 1;
         }
       }
       this.setState({
@@ -181,22 +181,25 @@ class Carousel extends React.Component {
         : (currentPage - 1) * pageItems;
     return (
       <React.Fragment>
-        {showCarousel &&
-          pageArray.map((item, pageNo) => {
-            const isEnabled = pageNo === currentPage - 1;
-            return (
-              <span
-                style={{
-                  cursor: "pointer",
-                  display: "inline-block",
-                  marginRight: "5px"
-                }}
-                onClick={() => this.progress(pageNo + 1)}
-              >
-                {renderProgress({ enabled: isEnabled })}
-              </span>
-            );
-          })}
+        {showCarousel && (
+          <div style={{ textAlign: "center" }}>
+            {pageArray.map((item, pageNo) => {
+              const isEnabled = pageNo === currentPage - 1;
+              return (
+                <span
+                  style={{
+                    cursor: "pointer",
+                    display: "inline-block",
+                    marginRight: "5px"
+                  }}
+                  onClick={() => this.progress(pageNo + 1)}
+                >
+                  {renderProgress({ enabled: isEnabled })}
+                </span>
+              );
+            })}
+          </div>
+        )}
         {showCarousel && (
           <React.Fragment>
             {renderPrev({

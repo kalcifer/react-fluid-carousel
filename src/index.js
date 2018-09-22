@@ -52,12 +52,14 @@ export default ({
   renderProgress,
   ...props
 }) => (
-  <Carousel
-    renderPrev={renderPrev || PrevButton}
-    renderNext={renderNext || NextButton}
-    renderProgress={renderProgress || ProgressUnit}
-    {...props}
-  >
-    {children}
-  </Carousel>
+  <div style={{ position: "relative" }}>
+    <Carousel
+      renderPrev={renderPrev || PrevButton}
+      renderNext={renderNext || NextButton}
+      renderProgress={renderProgress || ProgressUnit}
+      {...props}
+    >
+      {children}
+    </Carousel>
+  </div>
 );
