@@ -1,5 +1,5 @@
-export const childHoverVals = scale => ({
-  transform: `scaleX(${scale}) scaleY(1.1)`
+export const childHoverVals = (scaleX, scaleY) => ({
+  transform: `scaleX(${scaleX}) scaleY(${scaleY})`
 });
 
 export let childBeforeHoverVals = diff => ({

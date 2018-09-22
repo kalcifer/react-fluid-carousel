@@ -8,7 +8,8 @@ class Carousel extends React.Component {
   static defaultProps = {
     slidesToScroll: null,
     speed: 10,
-    scale: 1.2
+    scaleX: 1.2,
+    scaleY: 1.1
   };
 
   reactChildren = [];
@@ -44,20 +45,23 @@ class Carousel extends React.Component {
       const width = dimensions.width;
       // TODO: throw if width is empty
       const parentWidth = parentDimensions.width;
-      const scaledWidth = width * this.props.scale;
+      const scaledWidth = width * this.props.scaleX;
       const fullWidth = scaledWidth * this.count;
 
       const height = dimensions.height;
-      const scaledHeight = height * 1.1;
+      const scaledHeight = height * this.props.scaleY;
       const diffHeight = scaledHeight - height;
       this.lastPage = Math.floor(parentWidth / scaledWidth);
-      if (!this.pageItems)
-        this.pageItems = Math.abs((this.count - this.lastPage) / 2);
+      if (!this.pageItems) this.pageItems = this.lastPage;
       if (fullWidth > parentWidth) {
         this.showCarousel = true;
-        this.pages = Math.ceil(
-          (this.count - this.lastPage) / this.pageItems + 1
-        );
+        const remaining = this.count - this.lastPage;
+        if (remaining < this.lastPage) {
+          this.pages = 2;
+          this.pageItems = remaining;
+        } else {
+          this.pages = Math.ceil(remaining / this.pageItems) + 1;
+        }
       }
       this.setState({
         height,
@@ -66,7 +70,7 @@ class Carousel extends React.Component {
         scaledWidth,
         diffWidth: scaledWidth - width,
         diffHeight,
-        top: dimensions.top * this.props.scale,
+        top: dimensions.top * this.props.scaleY,
         parentWidth,
         fullWidth
       });
@@ -117,6 +121,7 @@ class Carousel extends React.Component {
       pages,
       pageItems,
       showCarousel,
+      lastPage,
       count
     } = this;
     const {
@@ -125,7 +130,8 @@ class Carousel extends React.Component {
       renderNext,
       renderProgress,
       speed,
-      scale
+      scaleX,
+      scaleY
     } = props;
     const {
       height,
@@ -149,7 +155,13 @@ class Carousel extends React.Component {
       return <NodeResolver innerRef={getRef}>{firstChild}</NodeResolver>;
     }
     const itemData = reactChildren.map((child, key) => {
-      const childStyles = getChildStyles(hoveredItem, key, scale, diffWidth);
+      const childStyles = getChildStyles(
+        hoveredItem,
+        key,
+        scaleX,
+        scaleY,
+        diffWidth
+      );
       return {
         child,
         childStyles,
@@ -163,6 +175,10 @@ class Carousel extends React.Component {
     const prevButtonDisabled = currentPage === 1 || hoveredItem > -1;
     const nextButtonDisabled = currentPage === pages || hoveredItem > -1;
     const pageArray = new Array(pages).fill(1);
+    const scrollToItem =
+      currentPage === pages
+        ? count - this.lastPage
+        : (currentPage - 1) * pageItems;
     return (
       <React.Fragment>
         {showCarousel &&
@@ -202,7 +218,7 @@ class Carousel extends React.Component {
           itemCount={count}
           width={parentWidth}
           style={{ overflow: "hidden", margin: `${diffHeight / 2}px 0` }}
-          scrollToItem={(currentPage - 1) * pageItems}
+          scrollToItem={scrollToItem}
           duration={speed}
         >
           {ItemRenderer}

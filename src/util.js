@@ -4,11 +4,11 @@ import {
   childHoverVals
 } from "./const";
 
-export const getChildStyles = (hoveredItem, key, scale, diffWidth) => {
+export const getChildStyles = (hoveredItem, key, scaleX, scaleY, diffWidth) => {
   let childStyles = {};
   if (hoveredItem >= 0) {
     if (key == hoveredItem) {
-      childStyles = childHoverVals(scale);
+      childStyles = childHoverVals(scaleX, scaleY);
     }
     if (key < hoveredItem) {
       childStyles = childBeforeHoverVals(diffWidth / 2);
